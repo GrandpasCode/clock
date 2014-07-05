@@ -38,6 +38,9 @@ ______________________________________________________________________________
 #include <time.h>
 #include <signal.h>
 #include <setjmp.h>
+#ifdef __STDC__
+#include <stdlib.h>
+#endif
 #ifdef BSD
 #include <strings.h>
 #else
