@@ -91,7 +91,11 @@ char	*argv[];
 	char	*malloc ();
 #endif
 	char	*strdup ();
+#ifdef __STDC__
+	void	winchHandle ();
+#else
 	int	winchHandle ();
+#endif
 
 #ifndef BSD
 	setlocale (LC_ALL, "");
@@ -150,7 +154,11 @@ myClock (mode, title)
 struct clockMode *mode;
 char	*title;
 {
-	int abort ();
+#ifdef __STDC__
+	void	abortHandle ();
+#else
+	int	abortHandle ();
+#endif
 	double asrads ();
 	struct tm *t;
 #ifdef __STDC__
@@ -166,8 +174,8 @@ char	*title;
 	initscr ();
 	nonl ();
 	cbreak ();
-	signal (SIGINT, abort);
-	signal (SIGTERM, abort);
+	signal (SIGINT, abortHandle);
+	signal (SIGTERM, abortHandle);
 
 	for (;;) {
 		erase ();
@@ -533,15 +541,24 @@ unsigned *pt;
 	return (s);
 } /* getDate */
 
-abort ()
+#ifdef __STDC__
+void abortHandle (signum)
+int signum;
+#else
+abortHandle ();
+#endif
 {
 	move (LINES - 1, 0);
 	refresh ();
 	endwin ();
 	exit (0);
-} /* abort */
+} /* abortHandle */
 
-winchHandle ()
+#ifdef __STDC__
+void winchHandle ()
+#else
+winchHandle()
+#endif
 {
 	struct winsize size;
 
