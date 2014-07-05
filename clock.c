@@ -85,7 +85,11 @@ char	*argv[];
 	int 	error;
 	char 	*title;
 	char	*ns;
+#ifdef __STDC__
+	void	*malloc ();
+#else
 	char	*malloc ();
+#endif
 	char	*strdup ();
 	int	winchHandle ();
 
