@@ -1,0 +1,67 @@
+.TH CLOCK 1 ICL
+.SH NAME
+clock \- display the time on a character based display
+.SH SYNOPSIS
+.B clock
+[
+.B \-frsd
+]
+[
+.B title ...
+]
+.SH OPTIONS
+.TP
+.B \-f
+Display the date and day of week on the clock face.
+.TP
+.B \-r
+Use a square
+face with roman numerals.
+This replaces the default round clock face.
+.TP
+.B \-s
+Start
+.B clock
+with the seconds turned on.
+By default, the clock starts with seconds turned
+off, and updates every minute.
+With seconds turned on, it updates
+every second and displays a second hand.
+.TP
+.B \-d
+Display the date and time (in digital format) on the clock face.
+.TP
+.B title 
+Any other arguments are displayed as a title on the display in deference
+to the default ``ICL''.
+.SH SEE ALSO
+.BR date (1V),
+.BR clock (1)
+on SunOS.
+.SH NOTES
+.LP
+When the
+.B \-r
+option is specified,
+.B clock
+displays the roman numeral four as 
+.B IIII
+instead of 
+.BR IV 
+to counterbalance the roman numeral eight,
+.BR VIII .
+.br
+.ne 5
+.SH BUGS
+.LP
+Because of the resolution of character based displays
+.BR clock 's
+hands are a bit rough and ready. If the terminal can do it try more
+lines/columns display modes.
+.LP
+Assumes that the terminal has a screen which is 1.25 times wider than
+it is high. Variations from this will render the clock face oval.
+.LP
+The amount of 
+.BR title
+that can be displayed is limited (suck it and see).
