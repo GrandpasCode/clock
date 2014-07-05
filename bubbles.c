@@ -4,6 +4,9 @@
 
 #include <curses.h>
 #include <signal.h>
+#ifdef __STDC__
+#include <stdlib.h>
+#endif
 
 #define SURFACE		((LINES) / 5)
 #define NOBUBBLE		' '
@@ -24,13 +27,17 @@ char *argv[];
 	static struct bubble *bubbles;
 	int quantity;
 	register int ix;
-	int abort ();
+#ifdef __STDC__
+	void abortHandle ();
+#else
+	int abortHandle ();
+#endif
 
 	initscr ();
 	nonl ();
 	cbreak ();
-	signal (SIGTERM, abort);
-	signal (SIGINT, abort);
+	signal (SIGTERM, abortHandle);
+	signal (SIGINT, abortHandle);
 
 	quantity = COLS / 4;
 	bubbles = (struct bubble *) calloc (quantity, 
@@ -120,10 +127,15 @@ struct bubble *pb;
 	pb->image = NOBUBBLE;
 } /* pop */
 
-abort () 
+#ifdef __STDC__
+void abortHandle (signum)
+int signum;
+#else
+abortHandle ()
+#endif
 {
 	move (LINES - 1, 0);
 	refresh ();
 	endwin ();
 	exit (0);
-} /* abort */
+} /* abortHandle */

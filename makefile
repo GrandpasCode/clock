@@ -11,4 +11,4 @@ clean:
 clock: clock.c
 	$(CC) $(CFLAGS) clock.c -lm -lcurses -o $@
 bubbles: bubbles.c
-	$(CC) $(CFLAGS) bubbles.c -lcurses -ltermcap -o $@
+	$(CC) $(CFLAGS) bubbles.c -lcurses -o $@
