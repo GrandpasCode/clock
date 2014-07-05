@@ -60,6 +60,11 @@ ______________________________________________________________________________
 #define ASPECT	((double) (7.5 / 10.0))	/* normal presentation of screen */
 				/* ratio y : x on normal screen	*/
 
+#ifdef __STDC__
+static plot ();
+static putline ();
+#endif
+
 struct cartesian {
 	double x;
 	double y;
