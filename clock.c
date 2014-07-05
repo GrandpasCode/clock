@@ -153,7 +153,11 @@ char	*title;
 	int abort ();
 	double asrads ();
 	struct tm *t;
+#ifdef __STDC__
+	time_t	tr;
+#else
 	unsigned tr;
+#endif
 	int hourHand;
 	int minHand;
 	char	*date;
@@ -516,7 +520,11 @@ char *date;
 } /* romCFace */
 
 char *getDate (pt)
+#ifdef __STDC__
+time_t *pt;
+#else
 unsigned *pt;
+#endif
 {
 	char *s;
 
