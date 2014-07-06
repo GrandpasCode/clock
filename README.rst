@@ -1,42 +1,52 @@
-====================
-A Curses Based Clock
-====================
+============================
+Curses Based Clock & Bubbles
+============================
 
-`A Curses Based Clock`_ was written by Martin Sullivan in 1991—according to the timestamps of the files from the tarball, the last update was made on 2004-02-02.
+This repostiory contains codes of ``clock.c`` and ``bubbles.c``, which was
+written by Martin Sullivan in 80s and 90s, you can read and download the
+tarball from `A Curses Based Clock`_.
 
 .. _A Curses Based Clock: http://www.zois.co.uk/tn/tn-1991-01-01.html
-
-In March, 2014 (``2014-03-19T07:53:28Z``), I (Yu-Jie Lin) found it, but couldn't compile using GCC 4.7.3. The code, ``clock.c``, was written in K&R C, although GCC seems to have options_ to compile K&R (non-ISO), ``-E -traditional``, Gnulib ain't happy with that, asking for an ISO C compiler to use its headers.
-
-.. _options: https://gcc.gnu.org/onlinedocs/gcc-3.1/gcc/Incompatibilities.html
-
-Updating the code probably the only way to resolves those errors and warnings, but I want to keep the most parts untouched and are able to be compiled in modern environment. With my limited knowledge about Standard C and K&R C, I still managed to achieve my goal. Now, it could be ``make`` without spitting out any errors and warnings. Note that—besides ``clock.c``—there is also a ``bubbles.c``, which is fixed as well.
-
-
-Some mistakes might be added by me, since this is an open source, please don't hesitate to create pull requests or open an issue.
 
 .. contents:: **Contents**
    :local:
 
 
-Screenshots
-===========
+Why this repository?
+====================
+
+In March, 2014 (``2014-03-19T07:53:28Z``), I (Yu-Jie Lin) found it, but
+couldn't compile using GCC 4.7.3. The code, ``clock.c``, was written in K&R C,
+although GCC seems to have options_ to compile K&R (non-ISO), ``-E
+-traditional``, Gnulib ain't happy with that, asking for an ISO C compiler to
+use its headers.
+
+.. _options: https://gcc.gnu.org/onlinedocs/gcc-3.1/gcc/Incompatibilities.html
+
+Updating the code probably the only way to resolves those errors and warnings,
+but I want to keep the most parts untouched and are able to be compiled in
+modern environment. With my limited knowledge about Standard C and K&R C, I
+still managed to achieve my goal. Now, it could be ``make`` without spitting
+out any errors and warnings. Note that—besides ``clock.c``—there is also a
+``bubbles.c``, which is fixed as well.
+
+Some mistakes might be added by me, since this is an open source, please don't
+hesitate to create pull requests or open an issue.
+
 
 ``clock.c``
------------
+===========
 
 .. figure:: https://bytebucket.org/livibetter/clock/raw/tip/clock.gif
 
+   Some options
+
 .. figure:: https://bytebucket.org/livibetter/clock/raw/tip/clock.roman.png
 
-``bubbles.c``
--------------
-
-.. figure:: https://bytebucket.org/livibetter/clock/raw/tip/bubbles.gif
-
+   Roman clock facce
 
 Options
-=======
+-------
 
 The usage is::
 
@@ -56,6 +66,46 @@ The usage is::
 
 ``TITLE``:
   use custom text instead of "ICL"
+
+
+``bubbles.c``
+=============
+
+.. figure:: https://bytebucket.org/livibetter/clock/raw/tip/bubbles.gif
+
+
+History
+=======
+
+After I created this repository, I emailed Martin Sullivan for some questions
+and soon got an reply with a bit of history about this clock:
+
+  Bubbles is by far the oldest of them. I wrote bubbles sometime between
+  1984 and 1986 when I was teaching myself curses(3). Curses was
+  important back then for it gave a fast, independent, character-based
+  interface to all the VT100-like terminals we used to use. Bubbles was
+  inspired by rain, a curses-based toy that was distributed with a
+  variety of standard UNIXs and produced an effect not unlike rain drops
+  on your screen. Subsequently bubbles has been cleaned up, and had a
+  couple of bugs removed. It's the version you see now, but it's full of
+  bad-practice 'C' too.
+
+  The clock program is whole lot older, but inspired by earlier work. At
+  the time I was working for ICL, in the early '90s, on a then new
+  machine, a Sparc/VME-bus/SCSI based mini-computer that would become
+  the DRS/6000. On display, somebody had written a rather crude script
+  involving clear(1), echo(1) and date(1) to repetitively print the time
+  on the middle of the console screen on the demo machine. I thought I
+  could do better with a lunch-time hack. The clock program went through
+  a number of iterations after that, but the code was ugly and contained
+  some disgusting hacks. Since it went through a SVR4 C compiler
+  relatively cleanly nothing much was done with it. I later wrote it up
+  as a `Technical Note`__, giving it a whimsical date from around the time I
+  wrote it. It will still compile for me with a 4.4.3 compiler under
+  Linux, although not without several pages of warnings about my lax
+  approached to C-language standards.
+
+__ `A Curses Based Clock`_
 
 
 Copyright
