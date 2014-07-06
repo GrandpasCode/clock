@@ -1,0 +1,3 @@
+2014-07-06  Yu-Jie Lin <livibetter@gmail.com>
+
+* bubbles.c, clock.c (main): make cursor invisible.

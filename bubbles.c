@@ -34,6 +34,7 @@ char *argv[];
 #endif
 
 	initscr ();
+	curs_set (0);
 	nonl ();
 	cbreak ();
 	signal (SIGTERM, abortHandle);
