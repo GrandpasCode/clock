@@ -2,11 +2,11 @@
 A Curses Based Clock
 ====================
 
-`A Curses Based Clock`_ was written by Martin Sullivan in 1991 based on the timestamps of the files from the tarball, the last update was made on 2004-02-02.
+`A Curses Based Clock`_ was written by Martin Sullivan in 1991—according to the timestamps of the files from the tarball, the last update was made on 2004-02-02.
 
 .. _A Curses Based Clock: http://www.zois.co.uk/tn/tn-1991-01-01.html
 
-In March, 2014 (``2014-03-19T07:53:28Z``), I (Yu-Jie Lin) found it, but couldn't compile using GCC 4.7.3. The code, ``clock.c``, was written in K&R C, although GCC seems to have options_ to compile K&R (non-ISO), ``-E --traditional``, Gnulib ain't happy with that, asking for an ISO C compiler to use its headers.
+In March, 2014 (``2014-03-19T07:53:28Z``), I (Yu-Jie Lin) found it, but couldn't compile using GCC 4.7.3. The code, ``clock.c``, was written in K&R C, although GCC seems to have options_ to compile K&R (non-ISO), ``-E -traditional``, Gnulib ain't happy with that, asking for an ISO C compiler to use its headers.
 
 .. _options: https://gcc.gnu.org/onlinedocs/gcc-3.1/gcc/Incompatibilities.html
 
