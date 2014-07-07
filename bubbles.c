@@ -25,6 +25,10 @@ int argc;
 char *argv[];
 {
 	static struct bubble *bubbles;
+	int c;
+	extern char *optarg;
+	/* update interval in ms */
+	int delay = 500;
 	int quantity;
 	register int ix;
 #ifdef __STDC__
@@ -32,6 +36,17 @@ char *argv[];
 #else
 	int abortHandle ();
 #endif
+
+	while ((c = getopt(argc, argv, "d:")) != EOF)
+		switch (c) {
+		case 'd':
+			delay = atoi(optarg);
+			break;
+		case '?':
+			fprintf (stderr, "usage: %s -rfsd title ...\n",
+			    argv[0]);
+			exit (1);
+		}
 
 	initscr ();
 	curs_set (0);
@@ -75,7 +90,7 @@ char *argv[];
 		} /* for */
 		move (0, 0);
 		refresh ();
-		usleep (500*1000);
+		usleep (delay * 1000);
 	} /* for */
 	endwin ();
 } /* main */

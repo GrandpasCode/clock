@@ -1,3 +1,7 @@
+2014-07-07  Yu-Jie Lin  <livibetter@gmail.com>
+
+* bubbles.c (main): add -d option for update interval
+
 2014-07-06  Yu-Jie Lin <livibetter@gmail.com>
 
 * bubbles.c, clock.c (main): make cursor invisible.
