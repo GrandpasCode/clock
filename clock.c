@@ -1,16 +1,16 @@
 /*
      Clock - puts a clock on a character based terminal by Martin Sullivan
      Copyright (C) 1993 ZOIS Ltd.
-     
+
      This program is free software; you can redistribute it and/or modify
      it under the terms of the GNU General Public License as published by
      the Free Software Foundation (version 1).
-     
+
      This program is distributed in the hope that it will be useful,
      but WITHOUT ANY WARRANTY; without even the implied warranty of
      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
      GNU General Public License for more details.
-     
+
      You should have received a copy of the GNU General Public License
      along with this program; if not, write to the Free Software
      Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
@@ -61,8 +61,8 @@ ______________________________________________________________________________
 				/* ratio y : x on normal screen	*/
 
 #ifdef __STDC__
-static plot ();
-static putline ();
+static void plot ();
+static void putline ();
 #endif
 
 struct cartesian {
@@ -79,7 +79,7 @@ struct clockMode {
 
 jmp_buf	reset;
 
-main (argc, argv)
+int main (argc, argv)
 int	argc;
 char	*argv[];
 {
@@ -152,10 +152,10 @@ char	*argv[];
 	setjmp (reset);
 	signal (SIGWINCH, winchHandle);
 	myClock (&mode, title);
-	exit (0);		
+	exit (0);
 } /* main */
 
-myClock (mode, title) 
+void myClock (mode, title)
 struct clockMode *mode;
 char	*title;
 {
@@ -210,7 +210,7 @@ char	*title;
 		drawline (asrads (minHand), 0.9, '*');
 
 		if (mode->dispSecs)
-			drawblob (asrads (t->tm_sec * 360 / 60), 
+			drawblob (asrads (t->tm_sec * 360 / 60),
 			    0.7, '@');
 
 		move (0, 0);
@@ -229,7 +229,7 @@ char	*title;
 	endwin ();
 } /* main */
 
-drawline (vector, length, c)
+void drawline (vector, length, c)
 double vector;		/* radians	*/
 double length;		/* relative 0.0 .. 1.0	*/
 char c;
@@ -245,7 +245,7 @@ char c;
 	plot (&start, &end, c);
 } /* drawline */
 
-drawblob (vector, length, c)
+void drawblob (vector, length, c)
 double vector;		/* radians	*/
 double length;		/* relative 0.0 .. 1.0	*/
 char c;
@@ -256,21 +256,21 @@ char c;
 } /* drawblob */
 
 #ifdef HOMEBREW
-static double min (f1, f2) 
+static double min (f1, f2)
 double f1;
 double f2;
 {
 	return (f1 < f2 ? f1 : f2);
 } /* min */
 
-static double max (f1, f2) 
+static double max (f1, f2)
 double f1;
 double f2;
 {
 	return (f1 > f2 ? f1 : f2);
 } /* min */
 
-static plot (start, end, c)
+static void plot (start, end, c)
 struct cartesian *start;
 struct cartesian *end;
 char c;
@@ -298,29 +298,29 @@ char c;
 	incX = (endX - hereX) / (float) COLS;
 
 	for (cnt = 0; cnt < COLS; cnt++) {
-		mvaddch ((int) (((hereX - start->x) * (end->y - start->y) 
+		mvaddch ((int) (((hereX - start->x) * (end->y - start->y)
 		    / (end->x - start->x)) + start->y), (int) hereX, c);
 		hereX += incX;
 	} /* for */
 } /* plot */
 
 #else /* !HOMEBREW */
-static plot (start, end, c)
+void static plot (start, end, c)
 struct cartesian *start;
 struct cartesian *end;
 char c;
 {
-	putline ((int) start->x, (int) start->y, 
+	putline ((int) start->x, (int) start->y,
 	    (int) end->x, (int) end->y, c);
 } /* plot */
 
-static putline (x0, y0, x1, y1, c)
+static void putline (x0, y0, x1, y1, c)
 int x0;
 int y0;
 int x1;
 int y1;
 char c;
-/* 
+/*
 
 	See Newman & Sproull "Principles of Interactive Computer
 	Graphics", McGraw-Hull, New York, 1979 pp 33-44.
@@ -377,7 +377,7 @@ int degrees;
 	return (((double) degrees / (double) 180.0) * (double) M_PI);
 } /* asrads */
 
-clockFace (title, date)
+void clockFace (title, date)
 char *title;
 char *date;
 {
@@ -397,7 +397,7 @@ char *date;
 		for (dash = 0; dash < 12; dash++) {
 			vector = (M_PI / 6.0 * (float) dash)
 			    - (M_PI / 2.0);
-			at[dash].iy = (int) ((sin (vector) 
+			at[dash].iy = (int) ((sin (vector)
 			    * HALF_Y) + HALF_Y);
 			at[dash].ix = (int) ((cos (vector)
 			    * HALF_X * ASPECT) + HALF_X);
@@ -405,20 +405,20 @@ char *date;
 	} /* if */
 
 	if ((int) strlen (date) <= (int) COLS)
-		mvaddstr ((int) ((LINES - 1) * 3) / (int) 4, 
-		    ((int) (COLS - 1) / (int) 2) - ((int) strlen (date) 
+		mvaddstr ((int) ((LINES - 1) * 3) / (int) 4,
+		    ((int) (COLS - 1) / (int) 2) - ((int) strlen (date)
 		    / (int) 2), date);
 
 	if ((int) strlen (title) <= (int) COLS)
-		mvaddstr ((int) (LINES - 1) / (int) 4, 
-		    ((int) (COLS - 1) / (int) 2) - ((int) strlen (title) 
+		mvaddstr ((int) (LINES - 1) / (int) 4,
+		    ((int) (COLS - 1) / (int) 2) - ((int) strlen (title)
 		    / (int) 2), title);
 
 	for (dash = 0; dash < 12; dash++)
 		mvaddch (at[dash].iy, at[dash].ix, dashes[dash]);
 } /* clockFace */
 
-romCFace (title, date)
+void romCFace (title, date)
 char *title;
 char *date;
 {
@@ -441,7 +441,7 @@ char *date;
 		"IX",
 		"X",
 		"XI"
-	}; 
+	};
 #endif /* BSD */
 
 	static struct {
@@ -499,7 +499,7 @@ char *date;
 					x *= -1.0;
 					y *= -1.0;
 				} /* if */
-					
+
 				if (y < -1.0)
 					y = -1.0;
 				if (x < -1.0)
@@ -514,22 +514,22 @@ char *date;
 			at[dash].iy = (int) ((y * HALF_Y) + HALF_Y);
 
 			if (at[dash].iy == 0 || at[dash].iy == (LINES - 1))
-				at[dash].ix -= (int) strlen (number[dash]) 
+				at[dash].ix -= (int) strlen (number[dash])
 				    / (int) 2;
-			if (at[dash].ix >= 
+			if (at[dash].ix >=
 			    (int) ((HALF_X * ASPECT) + HALF_X))
 				at[dash].ix -= strlen (number[dash]) - 1;
 		} /* for */
 	} /* if */
 
-	mvaddstr ((int) (LINES - 1) * (int) 3 / (int) 4 , 
-	    ((int) (COLS - 1) / (int) 2) - ((int) strlen (date) / 
+	mvaddstr ((int) (LINES - 1) * (int) 3 / (int) 4 ,
+	    ((int) (COLS - 1) / (int) 2) - ((int) strlen (date) /
 	    (int) 2), date);
 
-	mvaddstr ((int) (LINES - 1) / (int) 4, ((int) (COLS - 1) / 
+	mvaddstr ((int) (LINES - 1) / (int) 4, ((int) (COLS - 1) /
 	    (int) 2) - ((int) strlen (title) / (int) 2), title);
 
-	for (dash = 0; dash < 12; dash++) 
+	for (dash = 0; dash < 12; dash++)
 		mvaddstr (at[dash].iy, at[dash].ix, number[dash]);
 } /* romCFace */
 
