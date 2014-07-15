@@ -79,345 +79,6 @@ struct clockMode {
 
 jmp_buf	reset;
 
-int main (argc, argv)
-int	argc;
-char	*argv[];
-{
-	int	c;
-	extern char	*optarg;
-	extern int	optind;
-	struct clockMode mode;
-	int 	error;
-	char 	*title;
-	char	*ns;
-#ifdef __STDC__
-	void	*malloc ();
-#else
-	char	*malloc ();
-#endif
-	char	*strdup ();
-#ifdef __STDC__
-	void	winchHandle ();
-#else
-	int	winchHandle ();
-#endif
-
-#ifndef BSD
-	setlocale (LC_ALL, "");
-#endif
-	mode.dispSecs = NO;
-	mode.romFace = NO;
-	mode.dayDate = NO;
-	mode.digital = NO;
-	error = NO;
-	while ((c = getopt(argc, argv, "srfd")) != EOF)
-		switch (c) {
-		case 's':
-			mode.dispSecs = YES;
-			break;
-		case 'r':
-			mode.romFace = YES;
-			break;
-		case 'f':
-			mode.dayDate = YES;
-			break;
-		case 'd':
-			mode.digital = YES;
-			break;
-		case '?':
-			error = YES;
-		}
-
-	if (error) {
-		fprintf (stderr, "usage: %s -rfsd title ...\n", argv[0]);
-		exit (1);
-	} /* if */
-
-	title = DEFAULT_TITLE;
-	if (optind < argc)
-		title = strdup (argv[optind++]);
-	for ( ; optind < argc; optind++) {
-		ns = malloc (strlen (title) + strlen (argv[optind]) + 2);
-		if (ns == NULL) {
-			perror (argv[0]);
-			exit (1);
-		} /* if */
-		strcpy (ns, title);
-		strcat (ns, " ");
-		strcat (ns, argv[optind]);
-		free (title);
-		title = ns;
-	} /* for */
-
-	setjmp (reset);
-	signal (SIGWINCH, winchHandle);
-	myClock (&mode, title);
-	exit (0);
-} /* main */
-
-void myClock (mode, title)
-struct clockMode *mode;
-char	*title;
-{
-#ifdef __STDC__
-	void	abortHandle ();
-#else
-	int	abortHandle ();
-#endif
-	double asrads ();
-	struct tm *t;
-#ifdef __STDC__
-	time_t	tr;
-#else
-	unsigned tr;
-#endif
-	int hourHand;
-	int minHand;
-	char	*date;
-	char	*getDate ();
-
-	initscr ();
-	curs_set (0);
-	nonl ();
-	cbreak ();
-	signal (SIGINT, abortHandle);
-	signal (SIGTERM, abortHandle);
-
-	for (;;) {
-		erase ();
-		time (&tr);
-		t = localtime (&tr);
-
-		if (mode->dayDate)
-			date = getDate (&tr);
-		else if (mode->digital)
-			date = ctime (&tr);
-		else
-			date = "";
-
-		if (mode->romFace)
-			romCFace (title, date);
-		else
-			clockFace (title, date);
-
-		hourHand = ((t->tm_hour % 12) * (360 / 12)) +
-		    (t->tm_min * 360 / 60 / 12) +
-		    (t->tm_sec * 360 / 60 / 60 / 12);
-		drawline (asrads (hourHand), 0.6, '#');
-
-		minHand = (t->tm_min * 360 / 60) +
-		    (t->tm_sec * 360 / 60 / 60);
-		drawline (asrads (minHand), 0.9, '*');
-
-		if (mode->dispSecs)
-			drawblob (asrads (t->tm_sec * 360 / 60),
-			    0.7, '@');
-
-		move (0, 0);
-		refresh ();
-
-		if (mode->dispSecs)
-			sleep (1);
-		else {
-			time (&tr);	/* sync up to min	*/
-			t = localtime (&tr);
-			sleep (60 - t->tm_sec);
-		} /* else */
-
-	} /* for */
-
-	endwin ();
-} /* main */
-
-void drawline (vector, length, c)
-double vector;		/* radians	*/
-double length;		/* relative 0.0 .. 1.0	*/
-char c;
-{
-	struct cartesian end;
-	struct cartesian start;
-
-	vector -= M_PI / 2.0;	/* orientate 0 == straight up	*/
-	end.y = (sin (vector) * length * HALF_Y) + HALF_Y;
-	end.x = (cos (vector) * length * HALF_X * ASPECT) + HALF_X;
-	start.y = HALF_Y;
-	start.x = HALF_X;
-	plot (&start, &end, c);
-} /* drawline */
-
-void drawblob (vector, length, c)
-double vector;		/* radians	*/
-double length;		/* relative 0.0 .. 1.0	*/
-char c;
-{
-	vector -= M_PI / 2.0;
-	mvaddch ((int) ((sin (vector) * length * HALF_Y) + HALF_Y),
-	    (int) ((cos (vector) * length * HALF_X * ASPECT) + HALF_X), c);
-} /* drawblob */
-
-#ifdef HOMEBREW
-static double min (f1, f2)
-double f1;
-double f2;
-{
-	return (f1 < f2 ? f1 : f2);
-} /* min */
-
-static double max (f1, f2)
-double f1;
-double f2;
-{
-	return (f1 > f2 ? f1 : f2);
-} /* min */
-
-static void plot (start, end, c)
-struct cartesian *start;
-struct cartesian *end;
-char c;
-{
-	float hereX;
-	float endX;
-	float incX;
-	float hereY;
-	float endY;
-	float incY;
-	int cnt;
-
-	hereX = min (start->x, end->x);
-	endX = max (start->x, end->x);
-	if ((endX - hereX) < 1.0) {	/* line vertical	*/
-		hereY = min (start->y, end->y);
-		endY = max (start->y, end->y);
-		incY = (endY - hereY) / (float) LINES;
-		while (hereY < endY) {
-			mvaddch ((int) hereY, (int) hereX, c);
-			hereY += incY;
-		} /* while */
-		return;
-	} /* if */
-	incX = (endX - hereX) / (float) COLS;
-
-	for (cnt = 0; cnt < COLS; cnt++) {
-		mvaddch ((int) (((hereX - start->x) * (end->y - start->y)
-		    / (end->x - start->x)) + start->y), (int) hereX, c);
-		hereX += incX;
-	} /* for */
-} /* plot */
-
-#else /* !HOMEBREW */
-void static plot (start, end, c)
-struct cartesian *start;
-struct cartesian *end;
-char c;
-{
-	putline ((int) start->x, (int) start->y,
-	    (int) end->x, (int) end->y, c);
-} /* plot */
-
-static void putline (x0, y0, x1, y1, c)
-int x0;
-int y0;
-int x1;
-int y1;
-char c;
-/*
-
-	See Newman & Sproull "Principles of Interactive Computer
-	Graphics", McGraw-Hull, New York, 1979 pp 33-44.
-
-*/
-{
-	register int dx;
-	int a;
-	register int dy;
-	int b;
-	int two_a;
-	int two_b;
-	int xcrit;
-	register int eps;
-
-	dx = 1;
-	a = x1 - x0;
-	if (a < 0) {
-		dx = -1;
-		a = -a;
-	} /* if */
-
-	dy = 1;
-	b = y1 - y0;
-	if (b < 0) {
-		dy = -1;
-		b = -b;
-	} /* if */
-
-	two_a = 2 * a;
-	two_b = 2 * b;
-
-	xcrit = -b + two_a;
-	eps = 0;
-	mvaddch (y0, x0, c);
-	while  (x0 != x1 || y0 != y1) {
-		if (eps <= xcrit) {
-			x0 += dx;
-			eps += two_b;
-		} /* if */
-		if (eps >= a || a <= b) {
-			y0 += dy;
-			eps -= two_a;
-		} /* if */
-
-		mvaddch (y0, x0, c);
-	} /* while */
-} /* putline */
-#endif /* HOMEBREW */
-
-double asrads (degrees)
-int degrees;
-{
-	return (((double) degrees / (double) 180.0) * (double) M_PI);
-} /* asrads */
-
-void clockFace (title, date)
-char *title;
-char *date;
-{
-	static int lines = 0;
-	static int cols = 0;
-	register int dash;
-	static char dashes[] = "|//-\\\\|//-\\\\";
-	float	vector;
-	static struct {
-		int 	ix;
-		int 	iy;
-	} at[12];
-
-	if (lines != LINES ||  cols != COLS) {
-		lines = LINES;
-		cols = COLS;
-		for (dash = 0; dash < 12; dash++) {
-			vector = (M_PI / 6.0 * (float) dash)
-			    - (M_PI / 2.0);
-			at[dash].iy = (int) ((sin (vector)
-			    * HALF_Y) + HALF_Y);
-			at[dash].ix = (int) ((cos (vector)
-			    * HALF_X * ASPECT) + HALF_X);
-		} /* for */
-	} /* if */
-
-	if ((int) strlen (date) <= (int) COLS)
-		mvaddstr ((int) ((LINES - 1) * 3) / (int) 4,
-		    ((int) (COLS - 1) / (int) 2) - ((int) strlen (date)
-		    / (int) 2), date);
-
-	if ((int) strlen (title) <= (int) COLS)
-		mvaddstr ((int) (LINES - 1) / (int) 4,
-		    ((int) (COLS - 1) / (int) 2) - ((int) strlen (title)
-		    / (int) 2), title);
-
-	for (dash = 0; dash < 12; dash++)
-		mvaddch (at[dash].iy, at[dash].ix, dashes[dash]);
-} /* clockFace */
-
 void romCFace (title, date)
 char *title;
 char *date;
@@ -533,6 +194,195 @@ char *date;
 		mvaddstr (at[dash].iy, at[dash].ix, number[dash]);
 } /* romCFace */
 
+void clockFace (title, date)
+char *title;
+char *date;
+{
+	static int lines = 0;
+	static int cols = 0;
+	register int dash;
+	static char dashes[] = "|//-\\\\|//-\\\\";
+	float	vector;
+	static struct {
+		int 	ix;
+		int 	iy;
+	} at[12];
+
+	if (lines != LINES ||  cols != COLS) {
+		lines = LINES;
+		cols = COLS;
+		for (dash = 0; dash < 12; dash++) {
+			vector = (M_PI / 6.0 * (float) dash)
+			    - (M_PI / 2.0);
+			at[dash].iy = (int) ((sin (vector)
+			    * HALF_Y) + HALF_Y);
+			at[dash].ix = (int) ((cos (vector)
+			    * HALF_X * ASPECT) + HALF_X);
+		} /* for */
+	} /* if */
+
+	if ((int) strlen (date) <= (int) COLS)
+		mvaddstr ((int) ((LINES - 1) * 3) / (int) 4,
+		    ((int) (COLS - 1) / (int) 2) - ((int) strlen (date)
+		    / (int) 2), date);
+
+	if ((int) strlen (title) <= (int) COLS)
+		mvaddstr ((int) (LINES - 1) / (int) 4,
+		    ((int) (COLS - 1) / (int) 2) - ((int) strlen (title)
+		    / (int) 2), title);
+
+	for (dash = 0; dash < 12; dash++)
+		mvaddch (at[dash].iy, at[dash].ix, dashes[dash]);
+} /* clockFace */
+
+void drawline (vector, length, c)
+double vector;		/* radians	*/
+double length;		/* relative 0.0 .. 1.0	*/
+char c;
+{
+	struct cartesian end;
+	struct cartesian start;
+
+	vector -= M_PI / 2.0;	/* orientate 0 == straight up	*/
+	end.y = (sin (vector) * length * HALF_Y) + HALF_Y;
+	end.x = (cos (vector) * length * HALF_X * ASPECT) + HALF_X;
+	start.y = HALF_Y;
+	start.x = HALF_X;
+	plot (&start, &end, c);
+} /* drawline */
+
+void drawblob (vector, length, c)
+double vector;		/* radians	*/
+double length;		/* relative 0.0 .. 1.0	*/
+char c;
+{
+	vector -= M_PI / 2.0;
+	mvaddch ((int) ((sin (vector) * length * HALF_Y) + HALF_Y),
+	    (int) ((cos (vector) * length * HALF_X * ASPECT) + HALF_X), c);
+} /* drawblob */
+
+#ifdef HOMEBREW
+static double min (f1, f2)
+double f1;
+double f2;
+{
+	return (f1 < f2 ? f1 : f2);
+} /* min */
+
+static double max (f1, f2)
+double f1;
+double f2;
+{
+	return (f1 > f2 ? f1 : f2);
+} /* min */
+
+static void plot (start, end, c)
+struct cartesian *start;
+struct cartesian *end;
+char c;
+{
+	float hereX;
+	float endX;
+	float incX;
+	float hereY;
+	float endY;
+	float incY;
+	int cnt;
+
+	hereX = min (start->x, end->x);
+	endX = max (start->x, end->x);
+	if ((endX - hereX) < 1.0) {	/* line vertical	*/
+		hereY = min (start->y, end->y);
+		endY = max (start->y, end->y);
+		incY = (endY - hereY) / (float) LINES;
+		while (hereY < endY) {
+			mvaddch ((int) hereY, (int) hereX, c);
+			hereY += incY;
+		} /* while */
+		return;
+	} /* if */
+	incX = (endX - hereX) / (float) COLS;
+
+	for (cnt = 0; cnt < COLS; cnt++) {
+		mvaddch ((int) (((hereX - start->x) * (end->y - start->y)
+		    / (end->x - start->x)) + start->y), (int) hereX, c);
+		hereX += incX;
+	} /* for */
+} /* plot */
+
+#else /* !HOMEBREW */
+static void plot (start, end, c)
+struct cartesian *start;
+struct cartesian *end;
+char c;
+{
+	putline ((int) start->x, (int) start->y,
+	    (int) end->x, (int) end->y, c);
+} /* plot */
+
+static void putline (x0, y0, x1, y1, c)
+int x0;
+int y0;
+int x1;
+int y1;
+char c;
+/*
+
+	See Newman & Sproull "Principles of Interactive Computer
+	Graphics", McGraw-Hull, New York, 1979 pp 33-44.
+
+*/
+{
+	register int dx;
+	int a;
+	register int dy;
+	int b;
+	int two_a;
+	int two_b;
+	int xcrit;
+	register int eps;
+
+	dx = 1;
+	a = x1 - x0;
+	if (a < 0) {
+		dx = -1;
+		a = -a;
+	} /* if */
+
+	dy = 1;
+	b = y1 - y0;
+	if (b < 0) {
+		dy = -1;
+		b = -b;
+	} /* if */
+
+	two_a = 2 * a;
+	two_b = 2 * b;
+
+	xcrit = -b + two_a;
+	eps = 0;
+	mvaddch (y0, x0, c);
+	while  (x0 != x1 || y0 != y1) {
+		if (eps <= xcrit) {
+			x0 += dx;
+			eps += two_b;
+		} /* if */
+		if (eps >= a || a <= b) {
+			y0 += dy;
+			eps -= two_a;
+		} /* if */
+
+		mvaddch (y0, x0, c);
+	} /* while */
+} /* putline */
+#endif /* HOMEBREW */
+
+double asrads (degrees)
+int degrees;
+{
+	return (((double) degrees / (double) 180.0) * (double) M_PI);
+} /* asrads */
+
 char *getDate (pt)
 #ifdef __STDC__
 time_t *pt;
@@ -575,3 +425,154 @@ winchHandle()
 	endwin ();
 	longjmp (reset, 1);
 } /* winchHandle */
+
+void myClock (mode, title)
+struct clockMode *mode;
+char	*title;
+{
+#ifdef __STDC__
+	void	abortHandle ();
+#else
+	int	abortHandle ();
+#endif
+	double asrads ();
+	struct tm *t;
+#ifdef __STDC__
+	time_t	tr;
+#else
+	unsigned tr;
+#endif
+	int hourHand;
+	int minHand;
+	char	*date;
+	char	*getDate ();
+
+	initscr ();
+	curs_set (0);
+	nonl ();
+	cbreak ();
+	signal (SIGINT, abortHandle);
+	signal (SIGTERM, abortHandle);
+
+	for (;;) {
+		erase ();
+		time (&tr);
+		t = localtime (&tr);
+
+		if (mode->dayDate)
+			date = getDate (&tr);
+		else if (mode->digital)
+			date = ctime (&tr);
+		else
+			date = "";
+
+		if (mode->romFace)
+			romCFace (title, date);
+		else
+			clockFace (title, date);
+
+		hourHand = ((t->tm_hour % 12) * (360 / 12)) +
+		    (t->tm_min * 360 / 60 / 12) +
+		    (t->tm_sec * 360 / 60 / 60 / 12);
+		drawline (asrads (hourHand), 0.6, '#');
+
+		minHand = (t->tm_min * 360 / 60) +
+		    (t->tm_sec * 360 / 60 / 60);
+		drawline (asrads (minHand), 0.9, '*');
+
+		if (mode->dispSecs)
+			drawblob (asrads (t->tm_sec * 360 / 60),
+			    0.7, '@');
+
+		move (0, 0);
+		refresh ();
+
+		if (mode->dispSecs)
+			sleep (1);
+		else {
+			time (&tr);	/* sync up to min	*/
+			t = localtime (&tr);
+			sleep (60 - t->tm_sec);
+		} /* else */
+
+	} /* for */
+
+	endwin ();
+} /* main */
+
+int main (argc, argv)
+int	argc;
+char	*argv[];
+{
+	int	c;
+	extern char	*optarg;
+	extern int	optind;
+	struct clockMode mode;
+	int 	error;
+	char 	*title;
+	char	*ns;
+#ifdef __STDC__
+	void	*malloc ();
+#else
+	char	*malloc ();
+#endif
+	char	*strdup ();
+#ifdef __STDC__
+	void	winchHandle ();
+#else
+	int	winchHandle ();
+#endif
+
+#ifndef BSD
+	setlocale (LC_ALL, "");
+#endif
+	mode.dispSecs = NO;
+	mode.romFace = NO;
+	mode.dayDate = NO;
+	mode.digital = NO;
+	error = NO;
+	while ((c = getopt(argc, argv, "srfd")) != EOF)
+		switch (c) {
+		case 's':
+			mode.dispSecs = YES;
+			break;
+		case 'r':
+			mode.romFace = YES;
+			break;
+		case 'f':
+			mode.dayDate = YES;
+			break;
+		case 'd':
+			mode.digital = YES;
+			break;
+		case '?':
+			error = YES;
+		}
+
+	if (error) {
+		fprintf (stderr, "usage: %s -rfsd title ...\n", argv[0]);
+		exit (1);
+	} /* if */
+
+	title = DEFAULT_TITLE;
+	if (optind < argc)
+		title = strdup (argv[optind++]);
+	for ( ; optind < argc; optind++) {
+		ns = malloc (strlen (title) + strlen (argv[optind]) + 2);
+		if (ns == NULL) {
+			perror (argv[0]);
+			exit (1);
+		} /* if */
+		strcpy (ns, title);
+		strcat (ns, " ");
+		strcat (ns, argv[optind]);
+		free (title);
+		title = ns;
+	} /* for */
+
+	setjmp (reset);
+	signal (SIGWINCH, winchHandle);
+	myClock (&mode, title);
+	exit (0);
+} /* main */
+
