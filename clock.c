@@ -404,6 +404,7 @@ int signum;
 abortHandle ();
 #endif
 {
+	(void)(signum); /* avoiding "unused parameter" */
 	move (LINES - 1, 0);
 	refresh ();
 	endwin ();
@@ -526,6 +527,7 @@ char	*argv[];
 #ifndef BSD
 	setlocale (LC_ALL, "");
 #endif
+	(void)(optarg); /* avoiding "unused variable" */
 	mode.dispSecs = NO;
 	mode.romFace = NO;
 	mode.dayDate = NO;
