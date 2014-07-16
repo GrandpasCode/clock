@@ -2,6 +2,10 @@
 
 * bubbles.c: fix warnings reported with -Wall -Wextra
 
+2014-07-16  Alexandre Dantas <eu@alexdantas.net>
+
+* clock.c: fix warnings reported with -Wall -Wextra
+
 2014-07-07  Yu-Jie Lin  <livibetter@gmail.com>
 
 * bubbles.c (main): add -d option for update interval
