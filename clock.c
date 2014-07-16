@@ -62,6 +62,10 @@ ______________________________________________________________________________
 #define ASPECT	((double) (7.5 / 10.0))	/* normal presentation of screen */
 				/* ratio y : x on normal screen	*/
 
+#ifndef M_PI
+#define M_PI           3.14159265358979323846
+#endif
+
 #ifdef __STDC__
 static void plot ();
 static void putline ();
