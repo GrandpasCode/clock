@@ -1,14 +1,17 @@
-ALL=clock bubbles
+CFLAGS  = -Wextra -Wall
+LDFLAGS = -lm -lcurses
+
+ALL = clock bubbles
 
 all: $(ALL)
 
 clobber: clean
 	rm -f $(ALL)
 
-clean: 
+clean:
 	rm -f *.o
 
 clock: clock.c
-	$(CC) $(CFLAGS) clock.c -lm -lcurses -o $@
+	$(CC) $(CFLAGS) clock.c $(LDFLAGS) -o $@
 bubbles: bubbles.c
-	$(CC) $(CFLAGS) bubbles.c -lcurses -o $@
+	$(CC) $(CFLAGS) bubbles.c $(LDFLAGS) -o $@
