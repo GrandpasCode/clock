@@ -50,6 +50,7 @@ ______________________________________________________________________________
 #include <locale.h>
 #endif
 #include <unistd.h>
+#include <getopt.h>
 #include <sys/ioctl.h>
 
 #define DEFAULT_TITLE	"ICL"
