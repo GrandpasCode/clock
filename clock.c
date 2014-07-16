@@ -49,6 +49,7 @@ ______________________________________________________________________________
 #ifndef BSD
 #include <locale.h>
 #endif
+#include <unistd.h>
 #include <sys/ioctl.h>
 
 #define DEFAULT_TITLE	"ICL"
@@ -506,8 +507,6 @@ int	argc;
 char	*argv[];
 {
 	int	c;
-	extern char	*optarg;
-	extern int	optind;
 	struct clockMode mode;
 	int 	error;
 	char 	*title;
@@ -527,7 +526,6 @@ char	*argv[];
 #ifndef BSD
 	setlocale (LC_ALL, "");
 #endif
-	(void)(optarg); /* avoiding "unused variable" */
 	mode.dispSecs = NO;
 	mode.romFace = NO;
 	mode.dayDate = NO;
