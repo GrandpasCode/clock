@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #endif
 #include <unistd.h>
+#include <getopt.h>
 
 #define SURFACE        ((LINES) / 5)
 #define NOBUBBLE        ' '

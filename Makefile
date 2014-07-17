@@ -1,4 +1,4 @@
-CFLAGS  = -Wextra -Wall
+CFLAGS  = -std=c99 -Wextra -Wall
 LDFLAGS = -lm -lcurses
 
 ALL = clock bubbles
