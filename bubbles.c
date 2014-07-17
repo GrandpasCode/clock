@@ -105,7 +105,7 @@ char *argv[];
 			delay = atoi(optarg);
 			break;
 		case '?':
-			fprintf (stderr, "usage: %s -rfsd title ...\n",
+			fprintf (stderr, "usage: %s [-d DELAY]\n",
 			    argv[0]);
 			exit (1);
 		}

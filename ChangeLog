@@ -1,3 +1,7 @@
+2014-07-17  Yu-Jie Lin  <livibetter@gmail.com>
+
+* bubbles.c (main): fix usage line
+
 2014-07-16  Yu-Jie Lin  <livibetter@gmail.com>
 
 * bubbles.c: fix warnings reported with -Wall -Wextra

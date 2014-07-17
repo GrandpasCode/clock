@@ -4,7 +4,8 @@ Curses Based Clock & Bubbles
 
 This repostiory contains codes of ``clock.c`` and ``bubbles.c``, which was
 written by Martin Sullivan in 80s and 90s, you can read and download the
-tarball from `A Curses Based Clock`_.
+tarball from `A Curses Based Clock`_. The code for the original Martin
+Sullivan's code is commit c1ebc6b4982c or tag ``v0.1.0``.
 
 .. _A Curses Based Clock: http://www.zois.co.uk/tn/tn-1991-01-01.html
 
@@ -30,8 +31,8 @@ still managed to achieve my goal. Now, it could be ``make`` without spitting
 out any errors and warnings. Note that—besides ``clock.c``—there is also a
 ``bubbles.c``, which is fixed as well.
 
-Some mistakes might be added by me, since this is an open source, please don't
-hesitate to create pull requests or open an issue.
+Originally, this was only meant to fix errors and warnings, but in mid-July, a
+decision was made to transitioning into the C99 standard.
 
 
 ``clock.c``
@@ -72,6 +73,16 @@ The usage is::
 =============
 
 .. figure:: https://bytebucket.org/livibetter/clock/raw/tip/bubbles.gif
+
+Options
+-------
+
+The usage is::
+
+  clock [ -d DELAY ]
+
+``-d``:
+  update delay, default is 500 (ms).
 
 
 History
