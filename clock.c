@@ -177,7 +177,6 @@ char	*title;
 	char	*getDate ();
 
 	initscr ();
-	curs_set (0);
 	nonl ();
 	cbreak ();
 	signal (SIGINT, abortHandle);
