@@ -4,9 +4,7 @@
 
 #include <curses.h>
 #include <signal.h>
-#ifdef __STDC__
 #include <stdlib.h>
-#endif
 #include <time.h>
 #include <unistd.h>
 #include <getopt.h>
@@ -90,11 +88,6 @@ int main (int argc, char *argv[])
     struct timespec req = { .tv_sec = 0, .tv_nsec = 1000000 };
     int quantity;
     register int ix;
-#ifdef __STDC__
-    void abortHandle ();
-#else
-    int abortHandle ();
-#endif
 
     while ((c = getopt(argc, argv, "d:")) != EOF)
         switch (c) {

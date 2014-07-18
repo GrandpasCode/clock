@@ -38,9 +38,7 @@ ______________________________________________________________________________
 #include <time.h>
 #include <signal.h>
 #include <setjmp.h>
-#ifdef __STDC__
 #include <stdlib.h>
-#endif
 #ifdef BSD
 #include <strings.h>
 #else
@@ -399,22 +397,11 @@ void winchHandle ()
 
 void myClock (struct clockMode *mode, char *title)
 {
-#ifdef __STDC__
-    void    abortHandle ();
-#else
-    int     abortHandle ();
-#endif
-    double  asrads ();
     struct  tm *t;
-#ifdef __STDC__
     time_t  tr;
-#else
-    unsigned tr;
-#endif
     int     hourHand;
     int     minHand;
     char    *date;
-    char    *getDate ();
     int     ch;
     /* 1/100 seconds */
     struct  timespec req = { .tv_sec = 0, .tv_nsec = 10000000 };
@@ -491,17 +478,6 @@ int main (int argc, char *argv[])
     int     error;
     char     *title;
     char    *ns;
-#ifdef __STDC__
-    void    *malloc ();
-#else
-    char    *malloc ();
-#endif
-    char    *strdup ();
-#ifdef __STDC__
-    void    winchHandle ();
-#else
-    int     winchHandle ();
-#endif
 
 #ifndef BSD
     setlocale (LC_ALL, "");
