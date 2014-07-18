@@ -1,6 +1,10 @@
 2014-07-18  Yu-Jie Lin  <livibetter@gmail.com>
 
+* Makefile: conform to POSIX.1-2008, _POSIX_C_SOURCE=200809L
+
 * bubbles.c, clock.c: replace K&R with ANSI function definitions
+
+* bubbles.c (main): use nanosleep instead of usleep
 
 2014-07-17  Yu-Jie Lin  <livibetter@gmail.com>
 

@@ -1,4 +1,4 @@
-CFLAGS  = -std=c99 -Wextra -Wall
+CFLAGS  = -std=c99 -D _POSIX_C_SOURCE=200809L -Wextra -Wall
 LDFLAGS = -lm -lcurses
 
 ALL = clock bubbles

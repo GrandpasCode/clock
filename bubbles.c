@@ -7,6 +7,7 @@
 #ifdef __STDC__
 #include <stdlib.h>
 #endif
+#include <time.h>
 #include <unistd.h>
 #include <getopt.h>
 
@@ -83,8 +84,8 @@ int main (int argc, char *argv[])
 {
     static struct bubble *bubbles;
     int c;
-    /* update interval in ms */
-    int delay = 500;
+    long t;
+    struct timespec req = { .tv_sec = 0, .tv_nsec = 500000000 };
     int quantity;
     register int ix;
 #ifdef __STDC__
@@ -96,7 +97,9 @@ int main (int argc, char *argv[])
     while ((c = getopt(argc, argv, "d:")) != EOF)
         switch (c) {
         case 'd':
-            delay = atoi(optarg);
+            t = atoi(optarg) * 1000000;
+            req.tv_sec  = t / 1000000000;
+            req.tv_nsec = t % 1000000000;
             break;
         case '?':
             fprintf (stderr, "usage: %s [-d DELAY]\n",
@@ -146,7 +149,7 @@ int main (int argc, char *argv[])
         } /* for */
         move (0, 0);
         refresh ();
-        usleep (delay * 1000);
+        nanosleep (&req, NULL);
     } /* for */
     endwin ();
 } /* main */

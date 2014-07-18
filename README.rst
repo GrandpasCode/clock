@@ -31,8 +31,9 @@ still managed to achieve my goal. Now, it could be ``make`` without spitting
 out any errors and warnings. Note that—besides ``clock.c``—there is also a
 ``bubbles.c``, which is fixed as well.
 
-Originally, this was only meant to fix errors and warnings, but in mid-July, a
-decision was made to transitioning into the C99 standard.
+Originally, this was only meant to fix errors and warnings, but in mid-July,
+decisions were made to transitioning into the C99 standard and POSIX.1-2008
+conformant.
 
 
 ``clock.c``
