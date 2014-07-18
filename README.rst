@@ -137,9 +137,12 @@ __ `A Curses Based Clock`_
 Copyright
 =========
 
-Licensed under the GNU General Public License Version 1, see |license|_::
+Licensed under the GNU General Public License Version 1, see |COPYING|_::
 
+  Copyright (C) 2014 Alexandre Dantas
+  Copyright (C) 2014 Yu-Jie Lin
   Copyright (C) 1993 ZOIS Ltd.
+  Copyright (C) 1984-1986 Martin Sullivan
 
-.. |license| replace:: ``license``
-.. _license: https://bitbucket.org/livibetter/clock/src/tip/license
+.. |COPYING| replace:: ``COPYING``
+.. _COPYING: https://bitbucket.org/livibetter/clock/src/tip/COPYING

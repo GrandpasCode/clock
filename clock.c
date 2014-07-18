@@ -1,5 +1,7 @@
 /*
     Clock - puts a clock on a character based terminal by Martin Sullivan
+    Copyright (C) 2014 Alexandre Dantas
+    Copyright (C) 2014 Yu-Jie Lin
     Copyright (C) 1993 ZOIS Ltd.
 
     This program is free software; you can redistribute it and/or modify
