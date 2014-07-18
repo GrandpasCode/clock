@@ -27,8 +27,8 @@ float frand ()    /** in range 0.0 .. 1.0    */
     return ((float) (rand () & 0377) / 256.0);
 } /* frand */
 
-void new (pb)     /** make a new one    */
-struct bubble *pb;
+/** make a new one */
+void new (struct bubble *pb)
 {
     int size;
 
@@ -49,8 +49,8 @@ struct bubble *pb;
     } /* switch */
 } /* new */
 
-void pop (pb)            /** pop it    */
-struct bubble *pb;
+/** pop it */
+void pop (struct bubble *pb)
 {
     switch (pb->image) {
     case '.':
@@ -70,12 +70,7 @@ struct bubble *pb;
     pb->image = NOBUBBLE;
 } /* pop */
 
-#ifdef __STDC__
-void abortHandle (signum)
-int signum;
-#else
-abortHandle ()
-#endif
+void abortHandle (int signum)
 {
     (void)(signum); /* avoiding "unused parameter" */
     move (LINES - 1, 0);
@@ -84,9 +79,7 @@ abortHandle ()
     exit (0);
 } /* abortHandle */
 
-int main (argc, argv) 
-int argc;
-char *argv[];
+int main (int argc, char *argv[])
 {
     static struct bubble *bubbles;
     int c;

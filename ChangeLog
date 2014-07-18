@@ -1,3 +1,7 @@
+2014-07-18  Yu-Jie Lin  <livibetter@gmail.com>
+
+* bubbles.c, clock.c: replace K&R with ANSI function definitions
+
 2014-07-17  Yu-Jie Lin  <livibetter@gmail.com>
 
 * bubbles.c (main): fix usage line

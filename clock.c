@@ -66,11 +66,6 @@ ______________________________________________________________________________
 #define M_PI           3.14159265358979323846
 #endif
 
-#ifdef __STDC__
-static void plot ();
-static void putline ();
-#endif
-
 struct cartesian {
     double x;
     double y;
@@ -85,9 +80,12 @@ struct clockMode {
 
 jmp_buf    reset;
 
-void romCFace (title, date)
-char *title;
-char *date;
+
+static void plot (struct cartesian *start, struct cartesian *end, char c);
+static void putline (int x0, int y0, int x1, int y1, char c);
+
+
+void romCFace (char *title, char *date)
 {
     static int lines = 0;
     static int cols = 0;
@@ -200,9 +198,7 @@ char *date;
         mvaddstr (at[dash].iy, at[dash].ix, number[dash]);
 } /* romCFace */
 
-void clockFace (title, date)
-char *title;
-char *date;
+void clockFace (char *title, char *date)
 {
     static int lines = 0;
     static int cols = 0;
@@ -241,10 +237,9 @@ char *date;
         mvaddch (at[dash].iy, at[dash].ix, dashes[dash]);
 } /* clockFace */
 
-void drawline (vector, length, c)
-double vector;        /* radians    */
-double length;        /* relative 0.0 .. 1.0    */
-char c;
+/* vector: radians */
+/* length: relative 0.0 .. 1.0 */
+void drawline (double vector, double length, char c)
 {
     struct cartesian end;
     struct cartesian start;
@@ -257,10 +252,9 @@ char c;
     plot (&start, &end, c);
 } /* drawline */
 
-void drawblob (vector, length, c)
-double vector;        /* radians    */
-double length;        /* relative 0.0 .. 1.0    */
-char c;
+/* vector: radians */
+/* length: relative 0.0 .. 1.0 */
+void drawblob (double vector, double length, char c)
 {
     vector -= M_PI / 2.0;
     mvaddch ((int) ((sin (vector) * length * HALF_Y) + HALF_Y),
@@ -268,24 +262,17 @@ char c;
 } /* drawblob */
 
 #ifdef HOMEBREW
-static double min (f1, f2)
-double f1;
-double f2;
+static double min (double f1, double f2)
 {
     return (f1 < f2 ? f1 : f2);
 } /* min */
 
-static double max (f1, f2)
-double f1;
-double f2;
+static double max (double f1, double f2)
 {
     return (f1 > f2 ? f1 : f2);
 } /* min */
 
-static void plot (start, end, c)
-struct cartesian *start;
-struct cartesian *end;
-char c;
+static void plot (struct cartesian *start, struct cartesian *end, char c)
 {
     float hereX;
     float endX;
@@ -317,27 +304,19 @@ char c;
 } /* plot */
 
 #else /* !HOMEBREW */
-static void plot (start, end, c)
-struct cartesian *start;
-struct cartesian *end;
-char c;
+static void plot (struct cartesian *start, struct cartesian *end, char c)
 {
     putline ((int) start->x, (int) start->y,
         (int) end->x, (int) end->y, c);
 } /* plot */
 
-static void putline (x0, y0, x1, y1, c)
-int x0;
-int y0;
-int x1;
-int y1;
-char c;
 /*
 
     See Newman & Sproull "Principles of Interactive Computer
     Graphics", McGraw-Hull, New York, 1979 pp 33-44.
 
 */
+static void putline (int x0, int y0, int x1, int y1, char c)
 {
     register int dx;
     int a;
@@ -383,18 +362,12 @@ char c;
 } /* putline */
 #endif /* HOMEBREW */
 
-double asrads (degrees)
-int degrees;
+double asrads (int degrees)
 {
     return (((double) degrees / (double) 180.0) * (double) M_PI);
 } /* asrads */
 
-char *getDate (pt)
-#ifdef __STDC__
-time_t *pt;
-#else
-unsigned *pt;
-#endif
+char *getDate (time_t *pt)
 {
     char *s;
 
@@ -403,12 +376,7 @@ unsigned *pt;
     return (s);
 } /* getDate */
 
-#ifdef __STDC__
-void abortHandle (signum)
-int signum;
-#else
-abortHandle ();
-#endif
+void abortHandle (int signum)
 {
     (void)(signum); /* avoiding "unused parameter" */
     move (LINES - 1, 0);
@@ -417,11 +385,7 @@ abortHandle ();
     exit (0);
 } /* abortHandle */
 
-#ifdef __STDC__
 void winchHandle ()
-#else
-winchHandle()
-#endif
 {
     struct winsize size;
 
@@ -433,9 +397,7 @@ winchHandle()
     longjmp (reset, 1);
 } /* winchHandle */
 
-void myClock (mode, title)
-struct clockMode *mode;
-char    *title;
+void myClock (struct clockMode *mode, char *title)
 {
 #ifdef __STDC__
     void    abortHandle ();
@@ -507,9 +469,7 @@ char    *title;
     endwin ();
 } /* main */
 
-int main (argc, argv)
-int    argc;
-char    *argv[];
+int main (int argc, char *argv[])
 {
     int     c;
     struct  clockMode mode;
