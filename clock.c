@@ -415,18 +415,42 @@ void myClock (struct clockMode *mode, char *title)
     int     minHand;
     char    *date;
     char    *getDate ();
+    int     ch;
+    /* 1/100 seconds */
+    struct  timespec req = { .tv_sec = 0, .tv_nsec = 10000000 };
+    time_t  nextUpdate = 0;
 
     initscr ();
     curs_set (0);
     nonl ();
     cbreak ();
+    nodelay (stdscr, TRUE);
     signal (SIGINT, abortHandle);
     signal (SIGTERM, abortHandle);
 
     for (;;) {
+        ch = getch();
+        if (ch == 'q') {
+            break;
+        }
+
+        nanosleep (&req, NULL);
+        if (time(NULL) >= nextUpdate) {
+            time (&tr);
+            t = localtime (&tr);
+
+            if (mode->dispSecs)
+                nextUpdate = time(NULL) + 1;
+            else {
+                /* sync up to min */
+                time (&tr);
+                t = localtime (&tr);
+                nextUpdate = time(NULL) + (60 - t->tm_sec);
+            } /* else */
+        } else
+            continue;
+
         erase ();
-        time (&tr);
-        t = localtime (&tr);
 
         if (mode->dayDate)
             date = getDate (&tr);
@@ -455,15 +479,6 @@ void myClock (struct clockMode *mode, char *title)
 
         move (0, 0);
         refresh ();
-
-        if (mode->dispSecs)
-            sleep (1);
-        else {
-            time (&tr);    /* sync up to min    */
-            t = localtime (&tr);
-            sleep (60 - t->tm_sec);
-        } /* else */
-
     } /* for */
 
     endwin ();

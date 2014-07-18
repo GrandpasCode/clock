@@ -70,6 +70,13 @@ The usage is::
   use custom text instead of "ICL"
 
 
+Controls
+--------
+
+``q``:
+  Quit the clock
+
+
 ``bubbles.c``
 =============
 
@@ -84,6 +91,13 @@ The usage is::
 
 ``-d``:
   update delay, default is 500 (ms).
+
+
+Controls
+--------
+
+``q``:
+  Quit the bubbles
 
 
 History

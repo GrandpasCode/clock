@@ -84,8 +84,10 @@ int main (int argc, char *argv[])
 {
     static struct bubble *bubbles;
     int c;
-    long t;
-    struct timespec req = { .tv_sec = 0, .tv_nsec = 500000000 };
+    int ch;
+    long delayCount = 500;
+    long count = 0;
+    struct timespec req = { .tv_sec = 0, .tv_nsec = 1000000 };
     int quantity;
     register int ix;
 #ifdef __STDC__
@@ -97,9 +99,7 @@ int main (int argc, char *argv[])
     while ((c = getopt(argc, argv, "d:")) != EOF)
         switch (c) {
         case 'd':
-            t = atoi(optarg) * 1000000;
-            req.tv_sec  = t / 1000000000;
-            req.tv_nsec = t % 1000000000;
+            delayCount = atoi(optarg);
             break;
         case '?':
             fprintf (stderr, "usage: %s [-d DELAY]\n",
@@ -111,6 +111,7 @@ int main (int argc, char *argv[])
     curs_set (0);
     nonl ();
     cbreak ();
+    nodelay (stdscr, TRUE);
     signal (SIGTERM, abortHandle);
     signal (SIGINT, abortHandle);
 
@@ -125,7 +126,17 @@ int main (int argc, char *argv[])
     for (ix = 0; ix < quantity; ix++) 
         bubbles[ix].image = NOBUBBLE;
 
+    count = 0;
     for (;;) {
+        ch = getch();
+        if (ch == 'q')
+            break;
+
+        nanosleep (&req, NULL);
+        if (--count > 0)
+            continue;
+        count = delayCount;
+
         erase ();
 
         mvaddch (SURFACE, 0, '\\');

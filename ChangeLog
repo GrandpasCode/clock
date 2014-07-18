@@ -5,6 +5,12 @@
 * bubbles.c, clock.c: replace K&R with ANSI function definitions
 
 * bubbles.c (main): use nanosleep instead of usleep
+check for key input every 0.001 seconds
+add q key to quit
+
+* clock.c (mcClock): use nanosleep with 0.01-second interval for checking key
+input and updating clock
+add q key to quit
 
 2014-07-17  Yu-Jie Lin  <livibetter@gmail.com>
 
