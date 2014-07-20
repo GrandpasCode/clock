@@ -1,3 +1,8 @@
+2014-07-20  Yu-Jie Lin  <livibetter@gmail.com>
+
+* Makefile: fix misuse of CFLAGS with CPPFLAGS, use implicit rule to compile,
+add .PHONY
+
 2014-07-18  Yu-Jie Lin  <livibetter@gmail.com>
 
 * Makefile: conform to POSIX.1-2008, _POSIX_C_SOURCE=200809L

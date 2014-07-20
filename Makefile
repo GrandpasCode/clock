@@ -1,4 +1,5 @@
-CFLAGS  = -std=c99 -D _POSIX_C_SOURCE=200809L -Wextra -Wall
+CFLAGS = -std=c99 -Wextra -Wall
+CPPFLAGS = -D _POSIX_C_SOURCE=200809L
 LDFLAGS = -lm -lcurses
 
 ALL = clock bubbles
@@ -12,6 +13,7 @@ clean:
 	rm -f *.o
 
 clock: clock.c
-	$(CC) $(CFLAGS) clock.c $(LDFLAGS) -o $@
+
 bubbles: bubbles.c
-	$(CC) $(CFLAGS) bubbles.c $(LDFLAGS) -o $@
+
+.PHONY: all clobber clean
