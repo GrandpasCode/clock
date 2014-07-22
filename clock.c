@@ -55,8 +55,6 @@ ______________________________________________________________________________
 
 #define PROGRAM_NAME    "clock"
 #define DEFAULT_TITLE    "ICL"
-#define NO    0
-#define YES    1
 
 #define HALF_Y    ((double) (LINES - 1) / (double) 2.0)
 #define HALF_X    ((double) (COLS - 1) / (double) 2.0)
@@ -72,11 +70,11 @@ struct cartesian {
     double y;
 };
 
-struct clockMode {
-    int dispSecs;
-    int romFace;
-    int dayDate;
-    int digital;
+struct ClockMode {
+    bool second;
+    bool roman;
+    bool day_date;
+    bool digital;
 };
 
 jmp_buf    reset;
@@ -398,7 +396,7 @@ void winchHandle ()
     longjmp (reset, 1);
 } /* winchHandle */
 
-void myClock (struct clockMode *mode, char *title)
+void myClock (struct ClockMode *mode, char *title)
 {
     struct  tm *t;
     time_t  tr;
@@ -429,7 +427,7 @@ void myClock (struct clockMode *mode, char *title)
             time (&tr);
             t = localtime (&tr);
 
-            if (mode->dispSecs)
+            if (mode->second)
                 nextUpdate = time(NULL) + 1;
             else {
                 /* sync up to min */
@@ -442,14 +440,14 @@ void myClock (struct clockMode *mode, char *title)
 
         erase ();
 
-        if (mode->dayDate)
+        if (mode->day_date)
             date = getDate (&tr);
         else if (mode->digital)
             date = ctime (&tr);
         else
             date = "";
 
-        if (mode->romFace)
+        if (mode->roman)
             romCFace (title, date);
         else
             clockFace (title, date);
@@ -463,7 +461,7 @@ void myClock (struct clockMode *mode, char *title)
             (t->tm_sec * 360 / 60 / 60);
         drawline (asrads (minHand), 0.9, '*');
 
-        if (mode->dispSecs)
+        if (mode->second)
             drawblob (asrads (t->tm_sec * 360 / 60),
                 0.7, '@');
 
@@ -509,7 +507,12 @@ For complete documentation, run: man %s\n",
 int main (int argc, char *argv[])
 {
     int     c;
-    struct  clockMode mode;
+    struct  ClockMode mode = {
+        .second   = FALSE,
+        .roman    = FALSE,
+        .day_date = FALSE,
+        .digital  = FALSE
+    };
     char     *title;
     char    *ns;
     struct option long_options[] = {
@@ -523,23 +526,19 @@ int main (int argc, char *argv[])
 #ifndef BSD
     setlocale (LC_ALL, "");
 #endif
-    mode.dispSecs = NO;
-    mode.romFace = NO;
-    mode.dayDate = NO;
-    mode.digital = NO;
     while ((c = getopt_long(argc, argv, "srfdh", long_options, NULL)) != -1)
         switch (c) {
         case 's':
-            mode.dispSecs = YES;
+            mode.second = TRUE;
             break;
         case 'r':
-            mode.romFace = YES;
+            mode.roman = TRUE;
             break;
         case 'f':
-            mode.dayDate = YES;
+            mode.day_date = TRUE;
             break;
         case 'd':
-            mode.digital = YES;
+            mode.digital = TRUE;
             break;
 
         case 'h':
