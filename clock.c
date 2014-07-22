@@ -53,6 +53,7 @@ ______________________________________________________________________________
 #include <getopt.h>
 #include <sys/ioctl.h>
 
+#define PROGRAM_NAME    "clock"
 #define DEFAULT_TITLE    "ICL"
 #define NO    0
 #define YES    1
@@ -473,13 +474,51 @@ void myClock (struct clockMode *mode, char *title)
     endwin ();
 } /* main */
 
+void
+usage(int status)
+{
+    if (status != EXIT_SUCCESS)
+        fprintf(
+            stderr,
+            "Try '%s --help' for more information.\n",
+            PROGRAM_NAME
+        );
+    else {
+        printf(
+        "\
+Usage: %s [OPTION]...\n\
+Puts a clock on a character based terminal.\n\
+\n\
+  -s, --second              display second hand\n\
+  -r, --roman               display square face with Raoman numerals\n\
+  -d, --date                display digital date and time\n\
+  -f                        display date and day of weeek\n\
+  -h, --help                display this help and exit\n\
+\n\
+Report bugs to <https://bitbucket.org/livibetter/clock/issues>\n\
+Home page: <https://bitbucket.org/livibetter/clock>\n\
+For complete documentation, run: man %s\n",
+            PROGRAM_NAME,
+            PROGRAM_NAME
+        );
+    }
+
+    exit(status);
+}
+
 int main (int argc, char *argv[])
 {
     int     c;
     struct  clockMode mode;
-    int     error;
     char     *title;
     char    *ns;
+    struct option long_options[] = {
+        {"second", no_argument, NULL, 's'},
+        {"roman" , no_argument, NULL, 'r'},
+        {"date"  , no_argument, NULL, 'd'},
+        {"help"  , no_argument, NULL, 'h'},
+        {NULL    , 0          , NULL,  0 }
+    };
 
 #ifndef BSD
     setlocale (LC_ALL, "");
@@ -488,8 +527,7 @@ int main (int argc, char *argv[])
     mode.romFace = NO;
     mode.dayDate = NO;
     mode.digital = NO;
-    error = NO;
-    while ((c = getopt(argc, argv, "srfd")) != EOF)
+    while ((c = getopt_long(argc, argv, "srfdh", long_options, NULL)) != -1)
         switch (c) {
         case 's':
             mode.dispSecs = YES;
@@ -503,14 +541,14 @@ int main (int argc, char *argv[])
         case 'd':
             mode.digital = YES;
             break;
-        case '?':
-            error = YES;
-        }
 
-    if (error) {
-        fprintf (stderr, "usage: %s -rfsd title ...\n", argv[0]);
-        exit (1);
-    } /* if */
+        case 'h':
+            usage(EXIT_SUCCESS);
+            break;
+
+        default:
+            usage(EXIT_FAILURE);
+        }
 
     title = DEFAULT_TITLE;
     if (optind < argc)

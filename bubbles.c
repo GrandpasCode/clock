@@ -24,8 +24,16 @@
 #include <unistd.h>
 #include <getopt.h>
 
+#define PROGRAM_NAME      "bubbles"
 #define SURFACE        ((LINES) / 5)
 #define NOBUBBLE        ' '
+
+// macro helpers
+#define STR(s)            XSTR(s)
+#define XSTR(s)           #s
+
+// default option values
+#define DELAY_COUNT       500
 
 
 struct bubble {
@@ -93,26 +101,63 @@ void abortHandle (int signum)
     exit (0);
 } /* abortHandle */
 
+void
+usage(int status)
+{
+    if (status != EXIT_SUCCESS)
+        fprintf(
+            stderr,
+            "Try '%s --help' for more information.\n",
+            PROGRAM_NAME
+        );
+    else {
+        printf(
+        "\
+Usage: %s [OPTION]...\n\
+Puts a clock on a character based terminal.\n\
+\n\
+  -d, --dalay=DELAY         update invteral in milliseconds (Default: " STR(DELAY_COUNT) ")\n\
+  -h, --help                display this help and exit\n\
+\n\
+Report bugs to <https://bitbucket.org/livibetter/clock/issues>\n\
+Home page: <https://bitbucket.org/livibetter/clock>\n\
+For complete documentation, run: man %s\n",
+            PROGRAM_NAME,
+            PROGRAM_NAME
+        );
+    }
+
+    exit(status);
+}
+
 int main (int argc, char *argv[])
 {
     static struct bubble *bubbles;
     int c;
     int ch;
-    long delayCount = 500;
+    long delay_count = DELAY_COUNT;
     long count = 0;
     struct timespec req = { .tv_sec = 0, .tv_nsec = 1000000 };
     int quantity;
     register int ix;
+    struct option long_options[] = {
+        {"delay", required_argument, NULL, 'd'},
+        {"help" , no_argument      , NULL, 'h'},
+        {NULL   , 0                , NULL,  0 }
+    };
 
-    while ((c = getopt(argc, argv, "d:")) != EOF)
+    while ((c = getopt_long(argc, argv, "d:h", long_options, NULL)) != -1)
         switch (c) {
         case 'd':
-            delayCount = atoi(optarg);
+            delay_count = atoi(optarg);
             break;
-        case '?':
-            fprintf (stderr, "usage: %s [-d DELAY]\n",
-                argv[0]);
-            exit (1);
+
+        case 'h':
+            usage(EXIT_SUCCESS);
+            break;
+
+        default:
+            usage(EXIT_FAILURE);
         }
 
     initscr ();
@@ -143,7 +188,7 @@ int main (int argc, char *argv[])
         nanosleep (&req, NULL);
         if (--count > 0)
             continue;
-        count = delayCount;
+        count = delay_count;
 
         erase ();
 

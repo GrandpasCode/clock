@@ -52,19 +52,22 @@ Options
 
 The usage is::
 
-  clock [ -frsd ] [ title ...  ]
+  clock [OPTION] [TITLE]
 
-``-s``:
+``-s``, ``--second``:
   display second hand
 
-``-r``:
+``-r``, ``--roman``:
   use Roman numeral on square clock face
 
 ``-f``:
   display date and day of week
 
-``-d``:
+``-d``, ``--date``:
   display full date/time
+
+``-h``, ``--help``:
+  display help message and exit
 
 ``TITLE``:
   use custom text instead of "ICL"
@@ -87,10 +90,13 @@ Options
 
 The usage is::
 
-  clock [ -d DELAY ]
+  bubbles [OPTION]
 
-``-d``:
+``-d``, ``--delay``:
   update delay, default is 500 (ms).
+
+``-h``, ``--help``:
+  display help message and exit
 
 
 Controls

@@ -1,3 +1,7 @@
+2014-07-22  Yu-Jie Lin  <livibetter@gmail.com>
+
+* bubbles.c, clock.c (main): switch to getopt_long, add --help (#8)
+
 2014-07-20  Yu-Jie Lin  <livibetter@gmail.com>
 
 * Makefile: fix misuse of CFLAGS with CPPFLAGS, use implicit rule to compile,
