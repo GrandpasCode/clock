@@ -161,6 +161,7 @@ int main (int argc, char *argv[])
         }
 
     initscr ();
+    noecho ();
     curs_set (0);
     nonl ();
     cbreak ();
@@ -169,14 +170,14 @@ int main (int argc, char *argv[])
     signal (SIGINT, abortHandle);
 
     quantity = COLS / 4;
-    bubbles = (struct bubble *) calloc (quantity, 
+    bubbles = (struct bubble *) calloc (quantity,
         sizeof (struct bubble));
     if (bubbles == NULL) {
         perror (argv[0]);
         exit (1);
     } /* if */
 
-    for (ix = 0; ix < quantity; ix++) 
+    for (ix = 0; ix < quantity; ix++)
         bubbles[ix].image = NOBUBBLE;
 
     count = 0;
@@ -198,15 +199,15 @@ int main (int argc, char *argv[])
         mvaddch (SURFACE, COLS - 1, '/');
 
         for (ix = 0; ix < quantity; ix++) {
-            if (bubbles[ix].image == NOBUBBLE) 
+            if (bubbles[ix].image == NOBUBBLE)
                 new (&(bubbles[ix]));
             else {
                 bubbles[ix].y -= bubbles[ix].speed;
-                if (bubbles[ix].y < SURFACE) 
+                if (bubbles[ix].y < SURFACE)
                     pop (&(bubbles[ix]));
             } /* else */
 
-            if (bubbles[ix].image != NOBUBBLE) 
+            if (bubbles[ix].image != NOBUBBLE)
                 mvaddch (bubbles[ix].y, bubbles[ix].x,
                     bubbles[ix].image);
 

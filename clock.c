@@ -409,6 +409,7 @@ void myClock (struct ClockMode *mode, char *title)
     time_t  nextUpdate = 0;
 
     initscr ();
+    noecho ();
     curs_set (0);
     nonl ();
     cbreak ();
