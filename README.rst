@@ -77,7 +77,19 @@ Controls
 --------
 
 ``q``:
-  Quit the clock
+  quit the clock
+
+``s``:
+  toggles displaying the second hand
+
+``r``:
+  toggles using Roman numeral on square clock face
+
+``f``:
+  toggles displaying the date and day of week
+
+``d``:
+  toggles displaying full date/time
 
 
 ``bubbles.c``
