@@ -114,9 +114,9 @@ usage(int status)
         printf(
         "\
 Usage: %s [OPTION]...\n\
-Puts a clock on a character based terminal.\n\
+Displays an animation with bubbles on the terminal.\n\
 \n\
-  -d, --dalay=DELAY         update invteral in milliseconds (Default: " STR(DELAY_COUNT) ")\n\
+  -d, --dalay=DELAY         update interval in milliseconds (Default: " STR(DELAY_COUNT) ")\n\
   -h, --help                display this help and exit\n\
 \n\
 Report bugs to <https://bitbucket.org/livibetter/clock/issues>\n\
