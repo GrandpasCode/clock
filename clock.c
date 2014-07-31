@@ -512,6 +512,10 @@ Puts a clock on a character based terminal.\n\
   -f                        display date and day of weeek\n\
   -h, --help                display this help and exit\n\
 \n\
+Also, press any of the keys above to change the behavior\n\
+while the clock is running.\n\
+For example, press 's' to toggle the second hand.\n\
+\n\
 Report bugs to <https://bitbucket.org/livibetter/clock/issues>\n\
 Home page: <https://bitbucket.org/livibetter/clock>\n\
 For complete documentation, run: man %s\n",
