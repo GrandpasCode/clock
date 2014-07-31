@@ -406,7 +406,7 @@ void myClock (struct ClockMode *mode, char *title)
     int     ch;
     /* 1/100 seconds */
     struct  timespec req = { .tv_sec = 0, .tv_nsec = 10000000 };
-    time_t  nextUpdate = 0;
+    time_t  next_update = 0;
 
     initscr ();
     noecho ();
@@ -418,23 +418,41 @@ void myClock (struct ClockMode *mode, char *title)
     signal (SIGTERM, abortHandle);
 
     for (;;) {
-        ch = getch();
-        if (ch == 'q') {
-            break;
+	    ch = getch();
+	    if (ch == 'q')
+		    break;
+
+	    switch (c) {
+	    case 's':
+		    mode->second = !mode->second;
+		    next_update = 0;
+		    break;
+	    case 'r':
+		    mode->roman = !mode->roman;
+		    next_update = 0;
+		    break;
+	    case 'f':
+		    mode->day_date = !mode->day_date;
+		    next_update = 0;
+		    break;
+	    case 'd':
+		    mode->digital = !mode->digital;
+		    next_update = 0;
+		    break;
         }
 
         nanosleep (&req, NULL);
-        if (time(NULL) >= nextUpdate) {
+        if (time(NULL) >= next_update) {
             time (&tr);
             t = localtime (&tr);
 
             if (mode->second)
-                nextUpdate = time(NULL) + 1;
+                next_update = time(NULL) + 1;
             else {
                 /* sync up to min */
                 time (&tr);
                 t = localtime (&tr);
-                nextUpdate = time(NULL) + (60 - t->tm_sec);
+                next_update = time(NULL) + (60 - t->tm_sec);
             } /* else */
         } else
             continue;
