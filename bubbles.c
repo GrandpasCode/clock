@@ -19,6 +19,7 @@
 
 #include <curses.h>
 #include <signal.h>
+#include <stdbool.h>
 #include <stdlib.h>
 #include <time.h>
 #include <unistd.h>
@@ -164,7 +165,7 @@ int main (int argc, char *argv[])
     curs_set (0);
     nonl ();
     cbreak ();
-    nodelay (stdscr, TRUE);
+    nodelay (stdscr, true);
     signal (SIGTERM, abortHandle);
     signal (SIGINT, abortHandle);
 

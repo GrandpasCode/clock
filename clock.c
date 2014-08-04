@@ -40,6 +40,7 @@ ______________________________________________________________________________
 #include <time.h>
 #include <signal.h>
 #include <setjmp.h>
+#include <stdbool.h>
 #include <stdlib.h>
 #ifdef BSD
 #include <strings.h>
@@ -412,7 +413,7 @@ void myClock (struct ClockMode *mode, char *title)
     curs_set (0);
     nonl ();
     cbreak ();
-    nodelay (stdscr, TRUE);
+    nodelay (stdscr, true);
     signal (SIGINT, abortHandle);
     signal (SIGTERM, abortHandle);
 
@@ -508,10 +509,10 @@ int main (int argc, char *argv[])
 {
     int     c;
     struct  ClockMode mode = {
-        .second   = FALSE,
-        .roman    = FALSE,
-        .day_date = FALSE,
-        .digital  = FALSE
+        .second   = false,
+        .roman    = false,
+        .day_date = false,
+        .digital  = false
     };
     char     *title;
     char    *ns;
@@ -529,16 +530,16 @@ int main (int argc, char *argv[])
     while ((c = getopt_long(argc, argv, "srfdh", long_options, NULL)) != -1)
         switch (c) {
         case 's':
-            mode.second = TRUE;
+            mode.second = true;
             break;
         case 'r':
-            mode.roman = TRUE;
+            mode.roman = true;
             break;
         case 'f':
-            mode.day_date = TRUE;
+            mode.day_date = true;
             break;
         case 'd':
-            mode.digital = TRUE;
+            mode.digital = true;
             break;
 
         case 'h':
