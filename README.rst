@@ -36,6 +36,21 @@ decisions were made to transitioning into the C99 standard and POSIX.1-2008
 conformant.
 
 
+Installation
+============
+
+By default, both ``bubbles`` and ``clock`` binaries will be installed under
+``/usr/local``, you can use ``prefix=DIR`` and/or specify a target to only
+install either binary.
+
+.. code:: sh
+
+  $ make [prefix=$HOME/.local] [bubbles|clock] install[-strip]
+
+Use ``install-strip`` if you want stripped binaries. For uninstallation, use
+``uninstall`` target.
+
+
 ``clock.c``
 ===========
 
