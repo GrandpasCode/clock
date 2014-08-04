@@ -423,7 +423,7 @@ void myClock (struct ClockMode *mode, char *title)
 	    if (ch == 'q')
 		    break;
 
-	    switch (c) {
+	    switch (ch) {
 	    case 's':
 		    mode->second = !mode->second;
 		    next_update = 0;
