@@ -16,36 +16,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- *
- * Author: Martin Sullivan.
- * ZOIS Ltd., Stag House, 55 Kirkgate, Cockermouth CA13 9PH
- * Email: sullivan@zois.co.uk
- *
- * Puts a clock on a character based terminal. The arguments
- * are the same as found on the Sun clocktool. -DHOMEBREW gets
- * a naive homebrew algorithm for plotting lines else one
- * cribbed from a book. This program was written as a lunch
- * time hack whilest I was working on contract to ICL. You
- * should leave the default title as it is in their honour.
- *
- * Martin Sullivan, Chester, 1993.
  */
 
 #include <curses.h>
 #include <getopt.h>
-#ifndef BSD
 #include <locale.h>
-#endif
 #include <math.h>
 #include <setjmp.h>
 #include <signal.h>
 #include <stdbool.h>
 #include <stdlib.h>
-#ifdef BSD
-#include <strings.h>
-#else
 #include <string.h>
-#endif
 #include <sys/ioctl.h>
 #include <time.h>
 #include <unistd.h>
@@ -88,9 +69,6 @@ roman_clock_face (char *title, char *date)
     static int lines = 0;
     static int cols = 0;
     register int dash;
-#ifdef BSD
-    static char *number[12];
-#else
     static char *number[12] = {
         "XII",
         "I",
@@ -105,7 +83,6 @@ roman_clock_face (char *title, char *date)
         "X",
         "XI"
     };
-#endif
 
     static struct {
         int ix;
@@ -116,20 +93,6 @@ roman_clock_face (char *title, char *date)
     float y;
     float vector;
 
-#ifdef BSD
-    number[0] = "XII";
-    number[1] = "I";
-    number[2] = "II";
-    number[3] = "III";
-    number[4] = "IIII";
-    number[5] = "V";
-    number[6] = "VI";
-    number[7] = "VII";
-    number[8] = "VIII";
-    number[9] = "IX";
-    number[10] = "X";
-    number[11] = "XI";
-#endif
     if (lines != LINES || cols != COLS) {
         lines = LINES;
         cols = COLS;
@@ -281,61 +244,6 @@ drawblob (double vector, double length, char c)
 }
 
 
-#ifdef HOMEBREW
-static double
-min (double f1, double f2)
-{
-    return (f1 < f2 ? f1 : f2);
-}
-
-
-static double
-max (double f1, double f2)
-{
-    return (f1 > f2 ? f1 : f2);
-}
-
-
-static void
-plot (struct cartesian *start, struct cartesian *end, char c)
-{
-    float hereX;
-    float endX;
-    float incX;
-    float hereY;
-    float endY;
-    float incY;
-    int cnt;
-
-    hereX = min(start->x, end->x);
-    endX  = max(start->x, end->x);
-    // line vertical
-    if ((endX - hereX) < 1.0) {
-        hereY = min(start->y, end->y);
-        endY  = max(start->y, end->y);
-        incY = (endY - hereY) / (float) LINES;
-        while (hereY < endY) {
-            mvaddch((int) hereY, (int) hereX, c);
-            hereY += incY;
-        }
-        return;
-    }
-    incX = (endX - hereX) / (float) COLS;
-
-    for (cnt = 0; cnt < COLS; cnt++) {
-        mvaddch(
-            (int) (((hereX - start->x) * (end->y - start->y)
-                / (end->x - start->x)) + start->y),
-            (int) hereX,
-            c
-        );
-        hereX += incX;
-    }
-}
-
-
-// !HOMEBREW
-#else
 static void
 plot (struct cartesian *start, struct cartesian *end, char c)
 {
@@ -398,8 +306,6 @@ putline (int x0, int y0, int x1, int y1, char c)
         mvaddch(y0, x0, c);
     }
 }
-// HOMEBREW
-#endif
 
 
 double
@@ -607,9 +513,7 @@ main (int argc, char *argv[])
         {NULL    , 0          , NULL,  0 }
     };
 
-#ifndef BSD
     setlocale(LC_ALL, "");
-#endif
     while ((c = getopt_long(argc, argv, "srfdh", long_options, NULL)) != -1)
         switch (c) {
         case 's':
