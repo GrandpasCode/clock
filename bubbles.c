@@ -6,104 +6,126 @@
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation (version 1).
-
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
-
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
 #include <curses.h>
+#include <getopt.h>
 #include <signal.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <time.h>
 #include <unistd.h>
-#include <getopt.h>
 
-#define PROGRAM_NAME      "bubbles"
-#define SURFACE        ((LINES) / 5)
-#define NOBUBBLE        ' '
+#define PROGRAM_NAME "bubbles"
+#define SURFACE      ((LINES) / 5)
+#define NOBUBBLE     ' '
 
 // macro helpers
-#define STR(s)            XSTR(s)
-#define XSTR(s)           #s
+#define STR(s)  XSTR(s)
+#define XSTR(s) #s
 
 // default option values
-#define DELAY_COUNT       500
+#define DELAY_COUNT 500
 
 
 struct bubble {
-    int x;        /* 0 .. LINES    */
-    int y;        /* 0 .. COLS    */
-    char image;   /* '.', 'o', 'O': ' ' == no bubble     */
-    int speed;    /* 1 .. 3    */
+    // 0 .. LINES
+    int x;
+    // 0 .. COLS
+    int y;
+    // '.', 'o', 'O': ' ' == no bubble
+    char image;
+    // 1 .. 3
+    int speed;
 };
 
 
-float frand ()    /** in range 0.0 .. 1.0    */
+// in range 0.0 .. 1.0
+float
+frand ()
 {
-    return ((float) (rand () & 0377) / 256.0);
-} /* frand */
+    return ((float) (rand() & 0377) / 256.0);
+}
 
-/** make a new one */
-void new (struct bubble *pb)
+
+void
+new (struct bubble *pb)
 {
     int size;
 
     pb->y = LINES - 1;
-    pb->x = (int) ((frand () * (float) (COLS - 1)) + 0.5);
-    pb->speed = (int) (frand () * 3.0) + 1;
-    size = (int) (frand () * 4.0);
+    pb->x = (int) ((frand() * (float) (COLS - 1)) + 0.5);
+    pb->speed = (int) (frand() * 3.0) + 1;
+    size      = (int) (frand() * 4.0);
 
     switch (size) {
-    case 1: pb->image = '.';
+    case 1:
+        pb->image = '.';
         break;
-    case 2: pb->image = 'o';
+
+    case 2:
+        pb->image = 'o';
         break;
-    case 3:    pb->image = 'O';
+
+    case 3:
+        pb->image = 'O';
         break;
+
     default:
         pb->image = NOBUBBLE;
-    } /* switch */
-} /* new */
+    }
+}
 
-/** pop it */
-void pop (struct bubble *pb)
+
+void
+pop (struct bubble *pb)
 {
     switch (pb->image) {
     case '.':
-        mvaddch (SURFACE, pb->x, '_');
+        mvaddch(SURFACE, pb->x, '_');
         break;
+
     case 'o':
-        mvaddch (SURFACE, pb->x, 'v');
+        mvaddch(SURFACE, pb->x, 'v');
         break;
+
     case 'O':
-        mvaddch (SURFACE, pb->x, '*');
-        mvaddch (SURFACE - 1, pb->x, '.');
+        mvaddch(SURFACE, pb->x, '*');
+        mvaddch(SURFACE - 1, pb->x, '.');
         break;
+
     default:
         return;
-    } /* switch */
+    }
 
     pb->image = NOBUBBLE;
-} /* pop */
+}
 
-void abortHandle (int signum)
-{
-    (void)(signum); /* avoiding "unused parameter" */
-    move (LINES - 1, 0);
-    refresh ();
-    endwin ();
-    exit (0);
-} /* abortHandle */
 
 void
-usage(int status)
+abort_handle (int signum)
+{
+    // avoiding "unused parameter"
+    (void) (signum);
+
+    move(LINES - 1, 0);
+    refresh();
+    endwin();
+    exit(EXIT_SUCCESS);
+}
+
+
+void
+usage (int status)
 {
     if (status != EXIT_SUCCESS)
         fprintf(
@@ -131,14 +153,19 @@ For complete documentation, run: man %s\n",
     exit(status);
 }
 
-int main (int argc, char *argv[])
+
+int
+main (int argc, char *argv[])
 {
     static struct bubble *bubbles;
     int c;
     int ch;
     long delay_count = DELAY_COUNT;
     long count = 0;
-    struct timespec req = { .tv_sec = 0, .tv_nsec = 1000000 };
+    struct timespec req = {
+        .tv_sec = 0,
+        .tv_nsec = 1000000
+    };
     int quantity;
     register int ix;
     struct option long_options[] = {
@@ -161,22 +188,21 @@ int main (int argc, char *argv[])
             usage(EXIT_FAILURE);
         }
 
-    initscr ();
-    noecho ();
-    curs_set (0);
-    nonl ();
-    cbreak ();
-    nodelay (stdscr, true);
-    signal (SIGTERM, abortHandle);
-    signal (SIGINT, abortHandle);
+    initscr();
+    noecho();
+    curs_set(0);
+    nonl();
+    cbreak();
+    nodelay(stdscr, true);
+    signal(SIGTERM, abort_handle);
+    signal(SIGINT,  abort_handle);
 
     quantity = COLS / 4;
-    bubbles = (struct bubble *) calloc (quantity,
-        sizeof (struct bubble));
+    bubbles = (struct bubble *) calloc(quantity, sizeof(struct bubble));
     if (bubbles == NULL) {
-        perror (argv[0]);
-        exit (1);
-    } /* if */
+        perror(argv[0]);
+        exit(EXIT_FAILURE);
+    }
 
     for (ix = 0; ix < quantity; ix++)
         bubbles[ix].image = NOBUBBLE;
@@ -187,35 +213,34 @@ int main (int argc, char *argv[])
         if (ch == 'q')
             break;
 
-        nanosleep (&req, NULL);
+        nanosleep(&req, NULL);
         if (--count > 0)
             continue;
         count = delay_count;
 
-        erase ();
+        erase();
 
-        mvaddch (SURFACE, 0, '\\');
+        mvaddch(SURFACE, 0, '\\');
         for (ix = 1; ix < (COLS - 1); ix++)
-            mvaddch (SURFACE, ix, '_');
-        mvaddch (SURFACE, COLS - 1, '/');
+            mvaddch(SURFACE, ix, '_');
+        mvaddch(SURFACE, COLS - 1, '/');
 
         for (ix = 0; ix < quantity; ix++) {
             if (bubbles[ix].image == NOBUBBLE)
-                new (&(bubbles[ix]));
+                new(&(bubbles[ix]));
             else {
                 bubbles[ix].y -= bubbles[ix].speed;
                 if (bubbles[ix].y < SURFACE)
-                    pop (&(bubbles[ix]));
-            } /* else */
+                    pop(&(bubbles[ix]));
+            }
 
             if (bubbles[ix].image != NOBUBBLE)
-                mvaddch (bubbles[ix].y, bubbles[ix].x,
-                    bubbles[ix].image);
+                mvaddch(bubbles[ix].y, bubbles[ix].x, bubbles[ix].image);
 
-        } /* for */
-        move (0, 0);
-        refresh ();
-        nanosleep (&req, NULL);
-    } /* for */
-    endwin ();
-} /* main */
+        }
+        move(0, 0);
+        refresh();
+        nanosleep(&req, NULL);
+    }
+    endwin();
+}

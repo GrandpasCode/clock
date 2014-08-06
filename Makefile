@@ -2,9 +2,9 @@ INSTALL = install
 INSTALL_PROGRAM = $(INSTALL) -D -m 755
 INSTALL_MAN     = $(INSTALL) -D -m 644
 
-CFLAGS = -std=c99 -Wextra -Wall
+CFLAGS   = -std=c99 -Wextra -Wall
 CPPFLAGS = -D _POSIX_C_SOURCE=200809L
-LDFLAGS = -lm -lcurses
+LDFLAGS  = -lm -lcurses
 
 prefix  = /usr/local
 
@@ -18,11 +18,14 @@ ALL = clock bubbles
 INSTALL_BINS  = $(filter $(ALL),$(MAKECMDGOALS))
 INSTALL_BINS := $(if $(INSTALL_BINS),$(INSTALL_BINS),$(ALL))
 
+.PHONY: all
 all: $(ALL)
 
+.PHONY: clobber
 clobber: clean
 	rm -f $(ALL)
 
+.PHONY: clean
 clean:
 	rm -f *.o
 
@@ -56,5 +59,3 @@ ifneq (,$(findstring clock,$(INSTALL_BINS)))
 	rm -f $(DESTDIR)$(bindir)/clock
 	rm -f $(DESTDIR)$(man1dir)/clock.1
 endif
-
-.PHONY: all clobber clean

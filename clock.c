@@ -1,45 +1,44 @@
 /*
-    Clock - puts a clock on a character based terminal by Martin Sullivan
-    Copyright (C) 2014 Alexandre Dantas
-    Copyright (C) 2014 Yu-Jie Lin
-    Copyright (C) 1993 ZOIS Ltd.
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation (version 1).
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-
-    Author: Martin Sullivan.
-    ZOIS Ltd., Stag House, 55 Kirkgate, Cockermouth CA13 9PH
-    Email: sullivan@zois.co.uk
-______________________________________________________________________________
-
-    CLOCK -
-
-    Puts a clock on a character based terminal. The arguments
-    are the same as found on the Sun clocktool. -DHOMEBREW gets
-    a naive homebrew algorithm for plotting lines else one
-    cribbed from a book. This program was written as a lunch
-    time hack whilest I was working on contract to ICL. You
-    should leave the default title as it is in their honour.
-
-    Martin Sullivan, Chester, 1993.
-
-*/
+ * Clock - puts a clock on a character based terminal by Martin Sullivan
+ * Copyright (C) 2014 Alexandre Dantas
+ * Copyright (C) 2014 Yu-Jie Lin
+ * Copyright (C) 1993 ZOIS Ltd.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation (version 1).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *
+ * Author: Martin Sullivan.
+ * ZOIS Ltd., Stag House, 55 Kirkgate, Cockermouth CA13 9PH
+ * Email: sullivan@zois.co.uk
+ *
+ * Puts a clock on a character based terminal. The arguments
+ * are the same as found on the Sun clocktool. -DHOMEBREW gets
+ * a naive homebrew algorithm for plotting lines else one
+ * cribbed from a book. This program was written as a lunch
+ * time hack whilest I was working on contract to ICL. You
+ * should leave the default title as it is in their honour.
+ *
+ * Martin Sullivan, Chester, 1993.
+ */
 
 #include <curses.h>
+#include <getopt.h>
+#ifndef BSD
+#include <locale.h>
+#endif
 #include <math.h>
-#include <time.h>
-#include <signal.h>
 #include <setjmp.h>
+#include <signal.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #ifdef BSD
@@ -47,45 +46,44 @@ ______________________________________________________________________________
 #else
 #include <string.h>
 #endif
-#ifndef BSD
-#include <locale.h>
-#endif
-#include <unistd.h>
-#include <getopt.h>
 #include <sys/ioctl.h>
+#include <time.h>
+#include <unistd.h>
 
-#define PROGRAM_NAME    "clock"
-#define DEFAULT_TITLE    "ICL"
+#define PROGRAM_NAME  "clock"
+#define DEFAULT_TITLE "ICL"
 
-#define HALF_Y    ((double) (LINES - 1) / (double) 2.0)
-#define HALF_X    ((double) (COLS - 1) / (double) 2.0)
-#define ASPECT    ((double) (7.5 / 10.0))    /* normal presentation of screen */
-                  /* ratio y : x on normal screen    */
+#define HALF_Y ((double) (LINES - 1) / (double) 2.0)
+#define HALF_X ((double) (COLS  - 1) / (double) 2.0)
+// normal presentation of screen, ratio y : x on normal screen
+#define ASPECT ((double) (7.5 / 10.0))
 
 #ifndef M_PI
-#define M_PI           3.14159265358979323846
+#define M_PI 3.14159265358979323846
 #endif
+
 
 struct cartesian {
     double x;
     double y;
 };
 
-struct ClockMode {
+struct clock_mode {
     bool second;
     bool roman;
     bool day_date;
     bool digital;
 };
 
-jmp_buf    reset;
+jmp_buf reset;
 
 
 static void plot (struct cartesian *start, struct cartesian *end, char c);
 static void putline (int x0, int y0, int x1, int y1, char c);
 
 
-void romCFace (char *title, char *date)
+void
+roman_clock_face (char *title, char *date)
 {
     static int lines = 0;
     static int cols = 0;
@@ -107,16 +105,16 @@ void romCFace (char *title, char *date)
         "X",
         "XI"
     };
-#endif /* BSD */
+#endif
 
     static struct {
-        int     ix;
-        int    iy;
+        int ix;
+        int iy;
     } at[12];
 
-    float    x;
-    float    y;
-    float    vector;
+    float x;
+    float y;
+    float vector;
 
 #ifdef BSD
     number[0] = "XII";
@@ -138,23 +136,26 @@ void romCFace (char *title, char *date)
 
         for (dash = 0; dash < 12; dash++) {
             switch (dash) {
-            case 0:    x = 0.0;
+            case 0:
+                x =  0.0;
                 y = -1.0;
                 break;
-            case 3:    x = 1.0;
+            case 3:
+                x = 1.0;
                 y = 0.0;
                 break;
-            case 6:    x = 0.0;
+            case 6:
+                x = 0.0;
                 y = 1.0;
                 break;
-            case 9:    x = -1.0;
-                y = 0.0;
+            case 9:
+                x = -1.0;
+                y =  0.0;
                 break;
             default:
-                vector = (M_PI / 6.0 * (float) dash)
-                    - (M_PI / 2.0);
-                y = tan (vector);
-                x = tan ((M_PI / 2.0) - vector);
+                vector = (M_PI / 6.0 * (float) dash) - (M_PI / 2.0);
+                y = tan(vector);
+                x = tan((M_PI / 2.0) - vector);
 
                 if (vector < 0.0)
                     x *= -1.0;
@@ -163,7 +164,7 @@ void romCFace (char *title, char *date)
                 if (vector > M_PI) {
                     x *= -1.0;
                     y *= -1.0;
-                } /* if */
+                }
 
                 if (y < -1.0)
                     y = -1.0;
@@ -173,106 +174,130 @@ void romCFace (char *title, char *date)
                     y = 1.0;
                 if (x > 1.0)
                     x = 1.0;
-            } /* switch */
+            }
 
             at[dash].ix = (int) ((x * HALF_X * ASPECT) + HALF_X);
-            at[dash].iy = (int) ((y * HALF_Y) + HALF_Y);
+            at[dash].iy = (int) ((y * HALF_Y)          + HALF_Y);
 
             if (at[dash].iy == 0 || at[dash].iy == (LINES - 1))
-                at[dash].ix -= (int) strlen (number[dash])
-                    / (int) 2;
-            if (at[dash].ix >=
-                (int) ((HALF_X * ASPECT) + HALF_X))
-                at[dash].ix -= strlen (number[dash]) - 1;
-        } /* for */
-    } /* if */
+                at[dash].ix -= (int) strlen(number[dash]) / (int) 2;
+            if (at[dash].ix >= (int) ((HALF_X * ASPECT) + HALF_X))
+                at[dash].ix -= strlen(number[dash]) - 1;
+        }
+    }
 
-    mvaddstr ((int) (LINES - 1) * (int) 3 / (int) 4 ,
-        ((int) (COLS - 1) / (int) 2) - ((int) strlen (date) /
-        (int) 2), date);
+    mvaddstr(
+        (int) (LINES - 1) * (int) 3 / (int) 4,
+        ((int) (COLS - 1) / (int) 2) - ((int) strlen(date) / (int) 2),
+        date
+    );
 
-    mvaddstr ((int) (LINES - 1) / (int) 4, ((int) (COLS - 1) /
-        (int) 2) - ((int) strlen (title) / (int) 2), title);
+    mvaddstr(
+        (int) (LINES - 1) / (int) 4,
+        ((int) (COLS - 1) / (int) 2) - ((int) strlen(title) / (int) 2),
+        title
+    );
 
     for (dash = 0; dash < 12; dash++)
-        mvaddstr (at[dash].iy, at[dash].ix, number[dash]);
-} /* romCFace */
+        mvaddstr(at[dash].iy, at[dash].ix, number[dash]);
+}
 
-void clockFace (char *title, char *date)
+
+void
+clock_face (char *title, char *date)
 {
     static int lines = 0;
-    static int cols = 0;
+    static int cols  = 0;
     register int dash;
     static char dashes[] = "|//-\\\\|//-\\\\";
-    float    vector;
+    float vector;
     static struct {
-        int     ix;
-        int     iy;
+        int ix;
+        int iy;
     } at[12];
 
-    if (lines != LINES ||  cols != COLS) {
+    if (lines != LINES || cols != COLS) {
         lines = LINES;
-        cols = COLS;
+        cols  = COLS;
         for (dash = 0; dash < 12; dash++) {
-            vector = (M_PI / 6.0 * (float) dash)
-                - (M_PI / 2.0);
-            at[dash].iy = (int) ((sin (vector)
-                * HALF_Y) + HALF_Y);
-            at[dash].ix = (int) ((cos (vector)
-                * HALF_X * ASPECT) + HALF_X);
-        } /* for */
-    } /* if */
+            vector = (M_PI / 6.0 * (float) dash) - (M_PI / 2.0);
+            at[dash].iy = (int) ((sin(vector) * HALF_Y)          + HALF_Y);
+            at[dash].ix = (int) ((cos(vector) * HALF_X * ASPECT) + HALF_X);
+        }
+    }
 
-    if ((int) strlen (date) <= (int) COLS)
-        mvaddstr ((int) ((LINES - 1) * 3) / (int) 4,
-            ((int) (COLS - 1) / (int) 2) - ((int) strlen (date)
-            / (int) 2), date);
+    if ((int) strlen(date) <= (int) COLS)
+        mvaddstr(
+            (int) ((LINES - 1) * 3) / (int) 4,
+            ((int) (COLS - 1) / (int) 2) - ((int) strlen(date) / (int) 2),
+            date
+        );
 
-    if ((int) strlen (title) <= (int) COLS)
-        mvaddstr ((int) (LINES - 1) / (int) 4,
-            ((int) (COLS - 1) / (int) 2) - ((int) strlen (title)
-            / (int) 2), title);
+    if ((int) strlen(title) <= (int) COLS)
+        mvaddstr(
+            (int) (LINES - 1) / (int) 4,
+            ((int) (COLS - 1) / (int) 2) - ((int) strlen(title) / (int) 2),
+            title
+        );
 
     for (dash = 0; dash < 12; dash++)
-        mvaddch (at[dash].iy, at[dash].ix, dashes[dash]);
-} /* clockFace */
+        mvaddch(at[dash].iy, at[dash].ix, dashes[dash]);
+}
 
-/* vector: radians */
-/* length: relative 0.0 .. 1.0 */
-void drawline (double vector, double length, char c)
+
+/*
+ * vector: radians
+ * length: relative 0.0 .. 1.0
+ */
+void
+drawline (double vector, double length, char c)
 {
     struct cartesian end;
     struct cartesian start;
 
-    vector -= M_PI / 2.0;    /* orientate 0 == straight up    */
-    end.y = (sin (vector) * length * HALF_Y) + HALF_Y;
-    end.x = (cos (vector) * length * HALF_X * ASPECT) + HALF_X;
+    // orientate 0 == straight up
+    vector -= M_PI / 2.0;
+    end.y = (sin(vector) * length * HALF_Y)          + HALF_Y;
+    end.x = (cos(vector) * length * HALF_X * ASPECT) + HALF_X;
     start.y = HALF_Y;
     start.x = HALF_X;
-    plot (&start, &end, c);
-} /* drawline */
+    plot(&start, &end, c);
+}
 
-/* vector: radians */
-/* length: relative 0.0 .. 1.0 */
-void drawblob (double vector, double length, char c)
+
+/*
+ * vector: radians
+ * length: relative 0.0 .. 1.0
+ */
+void
+drawblob (double vector, double length, char c)
 {
     vector -= M_PI / 2.0;
-    mvaddch ((int) ((sin (vector) * length * HALF_Y) + HALF_Y),
-        (int) ((cos (vector) * length * HALF_X * ASPECT) + HALF_X), c);
-} /* drawblob */
+    mvaddch(
+        (int) ((sin(vector) * length * HALF_Y)          + HALF_Y),
+        (int) ((cos(vector) * length * HALF_X * ASPECT) + HALF_X),
+        c
+    );
+}
+
 
 #ifdef HOMEBREW
-static double min (double f1, double f2)
+static double
+min (double f1, double f2)
 {
     return (f1 < f2 ? f1 : f2);
-} /* min */
+}
 
-static double max (double f1, double f2)
+
+static double
+max (double f1, double f2)
 {
     return (f1 > f2 ? f1 : f2);
-} /* min */
+}
 
-static void plot (struct cartesian *start, struct cartesian *end, char c)
+
+static void
+plot (struct cartesian *start, struct cartesian *end, char c)
 {
     float hereX;
     float endX;
@@ -282,45 +307,58 @@ static void plot (struct cartesian *start, struct cartesian *end, char c)
     float incY;
     int cnt;
 
-    hereX = min (start->x, end->x);
-    endX = max (start->x, end->x);
-    if ((endX - hereX) < 1.0) {    /* line vertical    */
-        hereY = min (start->y, end->y);
-        endY = max (start->y, end->y);
+    hereX = min(start->x, end->x);
+    endX  = max(start->x, end->x);
+    // line vertical
+    if ((endX - hereX) < 1.0) {
+        hereY = min(start->y, end->y);
+        endY  = max(start->y, end->y);
         incY = (endY - hereY) / (float) LINES;
         while (hereY < endY) {
-            mvaddch ((int) hereY, (int) hereX, c);
+            mvaddch((int) hereY, (int) hereX, c);
             hereY += incY;
-        } /* while */
+        }
         return;
-    } /* if */
+    }
     incX = (endX - hereX) / (float) COLS;
 
     for (cnt = 0; cnt < COLS; cnt++) {
-        mvaddch ((int) (((hereX - start->x) * (end->y - start->y)
-            / (end->x - start->x)) + start->y), (int) hereX, c);
+        mvaddch(
+            (int) (((hereX - start->x) * (end->y - start->y)
+                / (end->x - start->x)) + start->y),
+            (int) hereX,
+            c
+        );
         hereX += incX;
-    } /* for */
-} /* plot */
+    }
+}
 
-#else /* !HOMEBREW */
-static void plot (struct cartesian *start, struct cartesian *end, char c)
+
+// !HOMEBREW
+#else
+static void
+plot (struct cartesian *start, struct cartesian *end, char c)
 {
-    putline ((int) start->x, (int) start->y,
-        (int) end->x, (int) end->y, c);
-} /* plot */
+    putline(
+        (int) start->x,
+        (int) start->y,
+        (int) end->x,
+        (int) end->y,
+        c
+    );
+}
+
 
 /*
-
-    See Newman & Sproull "Principles of Interactive Computer
-    Graphics", McGraw-Hull, New York, 1979 pp 33-44.
-
-*/
-static void putline (int x0, int y0, int x1, int y1, char c)
+ * See Newman & Sproull "Principles of Interactive Computer
+ * Graphics", McGraw-Hull, New York, 1979 pp 33-44.
+ */
+static void
+putline (int x0, int y0, int x1, int y1, char c)
 {
     register int dx;
-    int a;
     register int dy;
+    int a;
     int b;
     int two_a;
     int two_b;
@@ -332,168 +370,188 @@ static void putline (int x0, int y0, int x1, int y1, char c)
     if (a < 0) {
         dx = -1;
         a = -a;
-    } /* if */
+    }
 
     dy = 1;
     b = y1 - y0;
     if (b < 0) {
         dy = -1;
         b = -b;
-    } /* if */
+    }
 
     two_a = 2 * a;
     two_b = 2 * b;
 
     xcrit = -b + two_a;
     eps = 0;
-    mvaddch (y0, x0, c);
+    mvaddch(y0, x0, c);
     while  (x0 != x1 || y0 != y1) {
         if (eps <= xcrit) {
             x0 += dx;
             eps += two_b;
-        } /* if */
+        }
         if (eps >= a || a <= b) {
             y0 += dy;
             eps -= two_a;
-        } /* if */
+        }
 
-        mvaddch (y0, x0, c);
-    } /* while */
-} /* putline */
-#endif /* HOMEBREW */
+        mvaddch(y0, x0, c);
+    }
+}
+// HOMEBREW
+#endif
 
-double asrads (int degrees)
+
+double
+asrads (int degrees)
 {
     return (((double) degrees / (double) 180.0) * (double) M_PI);
-} /* asrads */
+}
 
-char *getDate (time_t *pt)
+
+char *
+get_date (time_t *pt)
 {
     char *s;
 
-    s = ctime (pt);
+    s = ctime(pt);
     s[10] = '\0';
-    return (s);
-} /* getDate */
+    return s;
+}
 
-void abortHandle (int signum)
+
+void
+abort_handle (int signum)
 {
-    (void)(signum); /* avoiding "unused parameter" */
-    move (LINES - 1, 0);
-    refresh ();
-    endwin ();
-    exit (0);
-} /* abortHandle */
+    // avoiding "unused parameter"
+    (void) (signum);
 
-void winchHandle ()
+    move(LINES - 1, 0);
+    refresh();
+    endwin();
+    exit(EXIT_SUCCESS);
+}
+
+
+void
+winch_handle ()
 {
     struct winsize size;
 
     if (ioctl(2, TIOCGWINSZ, &size) >= 0) {
         LINES = size.ws_row;
-        COLS = size.ws_col;
+        COLS  = size.ws_col;
     }
-    endwin ();
-    longjmp (reset, 1);
-} /* winchHandle */
+    endwin();
+    longjmp(reset, 1);
+}
 
-void myClock (struct ClockMode *mode, char *title)
+
+void
+my_clock (struct clock_mode *mode, char *title)
 {
     struct  tm *t;
     time_t  tr;
-    int     hourHand;
-    int     minHand;
+    int     hour_hand;
+    int     min_hand;
     char    *date;
     int     ch;
-    /* 1/100 seconds */
-    struct  timespec req = { .tv_sec = 0, .tv_nsec = 10000000 };
+    // 1/100 seconds
+    struct  timespec req = {
+        .tv_sec = 0,
+        .tv_nsec = 10000000
+    };
     time_t  next_update = 0;
 
-    initscr ();
-    noecho ();
-    curs_set (0);
-    nonl ();
-    cbreak ();
-    nodelay (stdscr, true);
-    signal (SIGINT, abortHandle);
-    signal (SIGTERM, abortHandle);
+    initscr();
+    noecho();
+    curs_set(0);
+    nonl();
+    cbreak();
+    nodelay(stdscr, true);
+    signal(SIGINT,  abort_handle);
+    signal(SIGTERM, abort_handle);
 
     for (;;) {
-	    ch = getch();
-	    if (ch == 'q')
-		    break;
+        ch = getch();
+        if (ch == 'q')
+            break;
 
-	    switch (ch) {
-	    case 's':
-		    mode->second = !mode->second;
-		    next_update = 0;
-		    break;
-	    case 'r':
-		    mode->roman = !mode->roman;
-		    next_update = 0;
-		    break;
-	    case 'f':
-		    mode->day_date = !mode->day_date;
-		    next_update = 0;
-		    break;
-	    case 'd':
-		    mode->digital = !mode->digital;
-		    next_update = 0;
-		    break;
+        switch (ch) {
+        case 's':
+            mode->second = !mode->second;
+            next_update = 0;
+            break;
+
+        case 'r':
+            mode->roman = !mode->roman;
+            next_update = 0;
+            break;
+
+        case 'f':
+            mode->day_date = !mode->day_date;
+            next_update = 0;
+            break;
+
+        case 'd':
+            mode->digital = !mode->digital;
+            next_update = 0;
+            break;
         }
 
-        nanosleep (&req, NULL);
+        nanosleep(&req, NULL);
         if (time(NULL) >= next_update) {
-            time (&tr);
-            t = localtime (&tr);
+            time(&tr);
+            t = localtime(&tr);
 
             if (mode->second)
                 next_update = time(NULL) + 1;
             else {
-                /* sync up to min */
-                time (&tr);
-                t = localtime (&tr);
+                // sync up to min
+                time(&tr);
+                t = localtime(&tr);
                 next_update = time(NULL) + (60 - t->tm_sec);
-            } /* else */
+            }
         } else
             continue;
 
-        erase ();
+        erase();
 
         if (mode->day_date)
-            date = getDate (&tr);
+            date = get_date(&tr);
         else if (mode->digital)
-            date = ctime (&tr);
+            date = ctime(&tr);
         else
             date = "";
 
         if (mode->roman)
-            romCFace (title, date);
+            roman_clock_face(title, date);
         else
-            clockFace (title, date);
+            clock_face(title, date);
 
-        hourHand = ((t->tm_hour % 12) * (360 / 12)) +
+        hour_hand = (
+            (t->tm_hour % 12) * (360 / 12)) +
             (t->tm_min * 360 / 60 / 12) +
-            (t->tm_sec * 360 / 60 / 60 / 12);
-        drawline (asrads (hourHand), 0.6, '#');
+            (t->tm_sec * 360 / 60 / 60 / 12
+        );
+        drawline(asrads(hour_hand), 0.6, '#');
 
-        minHand = (t->tm_min * 360 / 60) +
-            (t->tm_sec * 360 / 60 / 60);
-        drawline (asrads (minHand), 0.9, '*');
+        min_hand = (t->tm_min * 360 / 60) + (t->tm_sec * 360 / 60 / 60);
+        drawline(asrads(min_hand), 0.9, '*');
 
         if (mode->second)
-            drawblob (asrads (t->tm_sec * 360 / 60),
-                0.7, '@');
+            drawblob(asrads(t->tm_sec * 360 / 60), 0.7, '@');
 
-        move (0, 0);
-        refresh ();
-    } /* for */
+        move(0, 0);
+        refresh();
+    }
 
-    endwin ();
-} /* main */
+    endwin();
+}
+
 
 void
-usage(int status)
+usage (int status)
 {
     if (status != EXIT_SUCCESS)
         fprintf(
@@ -528,17 +586,19 @@ For complete documentation, run: man %s\n",
     exit(status);
 }
 
-int main (int argc, char *argv[])
+
+int
+main (int argc, char *argv[])
 {
-    int     c;
-    struct  ClockMode mode = {
+    int    c;
+    struct clock_mode mode = {
         .second   = false,
         .roman    = false,
         .day_date = false,
         .digital  = false
     };
-    char     *title;
-    char    *ns;
+    char *title;
+    char *ns;
     struct option long_options[] = {
         {"second", no_argument, NULL, 's'},
         {"roman" , no_argument, NULL, 'r'},
@@ -548,19 +608,22 @@ int main (int argc, char *argv[])
     };
 
 #ifndef BSD
-    setlocale (LC_ALL, "");
+    setlocale(LC_ALL, "");
 #endif
     while ((c = getopt_long(argc, argv, "srfdh", long_options, NULL)) != -1)
         switch (c) {
         case 's':
             mode.second = true;
             break;
+
         case 'r':
             mode.roman = true;
             break;
+
         case 'f':
             mode.day_date = true;
             break;
+
         case 'd':
             mode.digital = true;
             break;
@@ -575,22 +638,22 @@ int main (int argc, char *argv[])
 
     title = DEFAULT_TITLE;
     if (optind < argc)
-        title = strdup (argv[optind++]);
-    for ( ; optind < argc; optind++) {
-        ns = malloc (strlen (title) + strlen (argv[optind]) + 2);
+        title = strdup(argv[optind++]);
+    for (; optind < argc; optind++) {
+        ns = malloc(strlen(title) + strlen(argv[optind]) + 2);
         if (ns == NULL) {
-            perror (argv[0]);
-            exit (1);
-        } /* if */
-        strcpy (ns, title);
-        strcat (ns, " ");
-        strcat (ns, argv[optind]);
-        free (title);
+            perror(argv[0]);
+            exit(EXIT_FAILURE);
+        }
+        strcpy(ns, title);
+        strcat(ns, " ");
+        strcat(ns, argv[optind]);
+        free(title);
         title = ns;
-    } /* for */
+    }
 
-    setjmp (reset);
-    signal (SIGWINCH, winchHandle);
-    myClock (&mode, title);
-    exit (0);
-} /* main */
+    setjmp(reset);
+    signal(SIGWINCH, winch_handle);
+    my_clock(&mode, title);
+    exit(EXIT_SUCCESS);
+}
