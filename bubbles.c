@@ -25,6 +25,8 @@
 #include <time.h>
 #include <unistd.h>
 
+#include "common.h"
+
 #define PROGRAM_NAME "bubbles"
 #define SURFACE      ((LINES) / 5)
 #define NOBUBBLE     ' '
@@ -141,9 +143,10 @@ Displays an animation with bubbles on the terminal.\n\
 \n\
   -d, --dalay=DELAY         update interval in milliseconds (Default: " STR(DELAY_COUNT) ")\n\
   -h, --help                display this help and exit\n\
+  -v, --version             display version and exit\n\
 \n\
-Report bugs to <https://bitbucket.org/livibetter/clock/issues>\n\
-Home page: <https://bitbucket.org/livibetter/clock>\n\
+Report bugs to <" URL_ISSUES ">\n\
+Home page: <" URL_HOMEPAGE ">\n\
 For complete documentation, run: man %s\n",
             PROGRAM_NAME,
             PROGRAM_NAME
@@ -169,12 +172,13 @@ main (int argc, char *argv[])
     int quantity;
     register int ix;
     struct option long_options[] = {
-        {"delay", required_argument, NULL, 'd'},
-        {"help" , no_argument      , NULL, 'h'},
-        {NULL   , 0                , NULL,  0 }
+        {"delay"  , required_argument, NULL, 'd'},
+        {"help"   , no_argument      , NULL, 'h'},
+        {"version", no_argument      , NULL, 'v'},
+        {NULL     , 0                , NULL,  0 }
     };
 
-    while ((c = getopt_long(argc, argv, "d:h", long_options, NULL)) != -1)
+    while ((c = getopt_long(argc, argv, "d:hv", long_options, NULL)) != -1)
         switch (c) {
         case 'd':
             delay_count = atoi(optarg);
@@ -183,6 +187,10 @@ main (int argc, char *argv[])
         case 'h':
             usage(EXIT_SUCCESS);
             break;
+
+        case 'v':
+            PRINT_VERSION(PROGRAM_NAME);
+            exit(EXIT_SUCCESS);
 
         default:
             usage(EXIT_FAILURE);

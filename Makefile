@@ -29,9 +29,9 @@ clobber: clean
 clean:
 	rm -f *.o
 
-clock: clock.c
+clock: common.h clock.c
 
-bubbles: bubbles.c
+bubbles: common.h bubbles.c
 
 .PHONY: install
 install: $(INSTALL_BINS)

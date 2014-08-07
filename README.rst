@@ -84,6 +84,9 @@ The usage is::
 ``-h``, ``--help``:
   display help message and exit
 
+``-v``, ``--version``:
+  display version and exit
+
 ``TITLE``:
   use custom text instead of "ICL"
 
@@ -125,6 +128,8 @@ The usage is::
 ``-h``, ``--help``:
   display help message and exit
 
+``-v``, ``--version``:
+  display version and exit
 
 Controls
 --------

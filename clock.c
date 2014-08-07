@@ -31,6 +31,8 @@
 #include <time.h>
 #include <unistd.h>
 
+#include "common.h"
+
 #define PROGRAM_NAME  "clock"
 #define DEFAULT_TITLE "ICL"
 
@@ -506,15 +508,16 @@ main (int argc, char *argv[])
     char *title;
     char *ns;
     struct option long_options[] = {
-        {"second", no_argument, NULL, 's'},
-        {"roman" , no_argument, NULL, 'r'},
-        {"date"  , no_argument, NULL, 'd'},
-        {"help"  , no_argument, NULL, 'h'},
-        {NULL    , 0          , NULL,  0 }
+        {"second" , no_argument, NULL, 's'},
+        {"roman"  , no_argument, NULL, 'r'},
+        {"date"   , no_argument, NULL, 'd'},
+        {"help"   , no_argument, NULL, 'h'},
+        {"version", no_argument, NULL, 'v'},
+        {NULL     , 0          , NULL,  0 }
     };
 
     setlocale(LC_ALL, "");
-    while ((c = getopt_long(argc, argv, "srfdh", long_options, NULL)) != -1)
+    while ((c = getopt_long(argc, argv, "srfdhv", long_options, NULL)) != -1)
         switch (c) {
         case 's':
             mode.second = true;
@@ -535,6 +538,10 @@ main (int argc, char *argv[])
         case 'h':
             usage(EXIT_SUCCESS);
             break;
+
+        case 'v':
+            PRINT_VERSION(PROGRAM_NAME);
+            exit(EXIT_SUCCESS);
 
         default:
             usage(EXIT_FAILURE);
