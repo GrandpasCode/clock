@@ -1,5 +1,5 @@
 /*
- * puts bubbles on a character based terminal
+ * Animated ASCII bubbles in terminal
  * Copyright (C) 2014 Alexandre Dantas
  * Copyright (C) 2014 Yu-Jie Lin
  * Copyright (C) 1984-1986 Martin Sullivan
@@ -139,9 +139,10 @@ usage (int status)
         printf(
         "\
 Usage: %s [OPTION]...\n\
-Displays an animation with bubbles on the terminal.\n\
+Animated ASCII bubbles in terminal\n\
 \n\
-  -d, --dalay=DELAY         update interval in milliseconds (Default: " STR(DELAY_COUNT) ")\n\
+  -d, --dalay=DELAY         update interval in milliseconds\n\
+                            (Default: " STR(DELAY_COUNT) ")\n\
   -h, --help                display this help and exit\n\
   -v, --version             display version and exit\n\
 \n\

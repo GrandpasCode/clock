@@ -1,9 +1,8 @@
 /*
- * Clock - puts a clock on a character based terminal by Martin Sullivan
+ * ASCII analog clock in terminal
  * Copyright (C) 2014 Alexandre Dantas
  * Copyright (C) 2014 Yu-Jie Lin
  * Copyright (C) 1993 ZOIS Ltd.
- *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation (version 1).
@@ -34,7 +33,7 @@
 #include "common.h"
 
 #define PROGRAM_NAME  "clock"
-#define DEFAULT_TITLE "ICL"
+#define DEFAULT_TITLE "(|./)"
 
 #define HALF_Y ((double) (LINES - 1) / (double) 2.0)
 #define HALF_X ((double) (COLS  - 1) / (double) 2.0)
@@ -471,7 +470,7 @@ usage (int status)
         printf(
         "\
 Usage: %s [OPTION]...\n\
-Puts a clock on a character based terminal.\n\
+ASCII analog clock in terminal\n\
 \n\
   -s, --second              display second hand\n\
   -r, --roman               display square face with Raoman numerals\n\

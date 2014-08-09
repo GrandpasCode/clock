@@ -2,10 +2,11 @@
 Curses Based Clock & Bubbles
 ============================
 
-This repostiory contains codes of ``clock.c`` and ``bubbles.c``, which was
-written by Martin Sullivan in 80s and 90s, you can read and download the
-tarball from `A Curses Based Clock`_. The code for the original Martin
-Sullivan's code is commit c1ebc6b4982c or tag ``v0.1.0``.
+This repository contains codes of ``clock.c`` and ``bubbles.c``, which was
+written by Martin Sullivan in 80s and 90s, you can download the original
+tarball, in K&R C, from `A Curses Based Clock`_. A commit c1ebc6b4982c or tag
+``v0.1.0``, that was modified from the original code, has been specially done
+just for modern compiling environment.
 
 .. _A Curses Based Clock: http://www.zois.co.uk/tn/tn-1991-01-01.html
 
@@ -13,31 +14,10 @@ Sullivan's code is commit c1ebc6b4982c or tag ``v0.1.0``.
    :local:
 
 
-Why this repository?
-====================
-
-In March, 2014 (``2014-03-19T07:53:28Z``), I (Yu-Jie Lin) found it, but
-couldn't compile using GCC 4.7.3. The code, ``clock.c``, was written in K&R C,
-although GCC seems to have options_ to compile K&R (non-ISO), ``-E
--traditional``, Gnulib ain't happy with that, asking for an ISO C compiler to
-use its headers.
-
-.. _options: https://gcc.gnu.org/onlinedocs/gcc-3.1/gcc/Incompatibilities.html
-
-Updating the code probably the only way to resolves those errors and warnings,
-but I want to keep the most parts untouched and are able to be compiled in
-modern environment. With my limited knowledge about Standard C and K&R C, I
-still managed to achieve my goal. Now, it could be ``make`` without spitting
-out any errors and warnings. Note that—besides ``clock.c``—there is also a
-``bubbles.c``, which is fixed as well.
-
-Originally, this was only meant to fix errors and warnings, but in mid-July,
-decisions were made to transitioning into the C99 standard and POSIX.1-2008
-conformant.
-
-
 Installation
 ============
+
+You need a C compiler that supports C99 and POSIX.1-2008.
 
 By default, both ``bubbles`` and ``clock`` binaries will be installed under
 ``/usr/local``, you can use ``prefix=DIR`` and/or specify a target to only
@@ -51,8 +31,8 @@ Use ``install-strip`` if you want stripped binaries. For uninstallation, use
 ``uninstall`` target.
 
 
-``clock.c``
-===========
+``clock.c``: *ASCII analog clock in terminal*
+=============================================
 
 .. figure:: https://bytebucket.org/livibetter/clock/raw/tip/clock.gif
 
@@ -69,49 +49,44 @@ The usage is::
 
   clock [OPTION] [TITLE]
 
-``-s``, ``--second``:
-  display second hand
-
-``-r``, ``--roman``:
-  use Roman numeral on square clock face
-
-``-f``:
-  display date and day of week
-
-``-d``, ``--date``:
-  display full date/time
-
-``-h``, ``--help``:
-  display help message and exit
-
-``-v``, ``--version``:
-  display version and exit
-
-``TITLE``:
-  use custom text instead of "ICL"
-
++------------------------+----------------------------------------+
+| option and augument    | description                            |
++========+===============+========================================+
+| ``-s`` | ``--second``  | display second hand                    |
++--------+---------------+----------------------------------------+
+| ``-r`` | ``--roman``   | use Roman numeral on square clock face |
++--------+---------------+----------------------------------------+
+| ``-f`` |               | display date and day of week           |
++--------+---------------+----------------------------------------+
+| ``-d`` | ``--date``    | display full date/time                 |
++--------+---------------+----------------------------------------+
+| ``-h`` | ``--help``    | display help message and exit          |
++--------+---------------+----------------------------------------+
+| ``-v`` | ``--version`` | display version and exit               |
++--------+---------------+----------------------------------------+
+| ``TITLE``              | use custom text instead of "(\|./)"    |
++------------------------+----------------------------------------+
 
 Controls
 --------
 
-``q``:
-  quit the clock
++-------+----------------------------------+
+| key   | description                      |
++=======+==================================+
+| ``q`` | quit the clock                   |
++-------+----------------------------------+
+| ``s`` | toggle second hand               |
++-------+----------------------------------+
+| ``r`` | toggle Roman numeral square face |
++-------+----------------------------------+
+| ``f`` | toggle date and day of week      |
++-------+----------------------------------+
+| ``d`` | toggle full date and time        |
++-------+----------------------------------+
 
-``s``:
-  toggles displaying the second hand
 
-``r``:
-  toggles using Roman numeral on square clock face
-
-``f``:
-  toggles displaying the date and day of week
-
-``d``:
-  toggles displaying full date/time
-
-
-``bubbles.c``
-=============
+``bubbles.c``: *Animated ASCII bubbles in terminal*
+===================================================
 
 .. figure:: https://bytebucket.org/livibetter/clock/raw/tip/bubbles.gif
 
@@ -122,24 +97,47 @@ The usage is::
 
   bubbles [OPTION]
 
-``-d``, ``--delay``:
-  update delay, default is 500 (ms).
-
-``-h``, ``--help``:
-  display help message and exit
-
-``-v``, ``--version``:
-  display version and exit
++------------------------+-------------------------------+---------+
+| option                 | description                   | default |
++========+===============+===============================+=========+
+| ``-d`` | ``--delay``   | update delay in milliseconds  | 500     |
++--------+---------------+-------------------------------+---------+
+| ``-h`` | ``--help``    | display help message and exit |         |
++--------+---------------+-------------------------------+---------+
+| ``-v`` | ``--version`` | display version and exit      |         |
++--------+---------------+-------------------------------+---------+
 
 Controls
 --------
 
-``q``:
-  Quit the bubbles
++-------+------------------+
+| key   | description      |
++-------+------------------+
+| ``q`` | quit the bubbles |
++-------+------------------+
 
 
 History
 =======
+
+In March, 2014 [#ts]_, I (@livibetter, Yu-Jie Lin) accidentally found the
+*clock*, but couldn't compile using GCC 4.7.3. The code, ``clock.c``, was
+written in K&R C, although GCC seems to have options_ to compile K&R C
+(non-ISO), ``-E -traditional``, Gnulib ain't happy with that, asking for an ISO
+C compiler to use its headers.
+
+.. _options: https://gcc.gnu.org/onlinedocs/gcc-3.1/gcc/Incompatibilities.html
+
+Updating the code probably is the only way to resolve those errors and
+warnings, but I want to keep the most parts untouched and are able to be
+compiled in modern environment. With my limited knowledge of Standard and K&R
+C, I still managed to achieve my goal. Now, it could be ``make`` without
+spitting out any errors and warnings. Note that -- besides ``clock.c`` -- there
+is also a ``bubbles.c``, which is fixed as well.
+
+Originally, this was only meant to fix errors and warnings, but in mid-July,
+decisions were made to transitioning into a C99 standard and
+POSIX.1-2008-conformant project.
 
 After I created this repository, I emailed Martin Sullivan for some questions
 and soon got an reply with a bit of history about this clock:
@@ -184,3 +182,7 @@ Licensed under the GNU General Public License Version 1, see |COPYING|_::
 
 .. |COPYING| replace:: ``COPYING``
 .. _COPYING: https://bitbucket.org/livibetter/clock/src/tip/COPYING
+
+----
+
+.. [#ts] The timestamp is ``2014-03-19T07:53:28Z``
