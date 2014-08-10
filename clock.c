@@ -473,9 +473,9 @@ Usage: %s [OPTION]...\n\
 ASCII analog clock in terminal\n\
 \n\
   -s, --second              display second hand\n\
-  -r, --roman               display square face with Raoman numerals\n\
+  -r, --roman               display square face with Roman numerals\n\
   -d, --date                display digital date and time\n\
-  -f                        display date and day of weeek\n\
+  -f                        display date and day of week\n\
   -h, --help                display this help and exit\n\
 \n\
 Also, press any of the keys above to change the behavior\n\

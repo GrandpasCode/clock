@@ -4,9 +4,7 @@ Curses Based Clock & Bubbles
 
 This repository contains codes of ``clock.c`` and ``bubbles.c``, which was
 written by Martin Sullivan in 80s and 90s, you can download the original
-tarball, in K&R C, from `A Curses Based Clock`_. A commit c1ebc6b4982c or tag
-``v0.1.0``, that was modified from the original code, has been specially done
-just for modern compiling environment.
+tarball, in K&R C, from `A Curses Based Clock`_.
 
 .. _A Curses Based Clock: http://www.zois.co.uk/tn/tn-1991-01-01.html
 
@@ -40,7 +38,7 @@ Use ``install-strip`` if you want stripped binaries. For uninstallation, use
 
 .. figure:: https://bytebucket.org/livibetter/clock/raw/tip/clock.roman.png
 
-   Roman clock facce
+   Roman clock face
 
 Options
 -------
@@ -50,7 +48,7 @@ The usage is::
   clock [OPTION] [TITLE]
 
 +------------------------+----------------------------------------+
-| option and augument    | description                            |
+| option and argument    | description                            |
 +========+===============+========================================+
 | ``-s`` | ``--second``  | display second hand                    |
 +--------+---------------+----------------------------------------+
@@ -168,6 +166,11 @@ and soon got an reply with a bit of history about this clock:
   approached to C-language standards.
 
 __ `A Curses Based Clock`_
+
+`Version 0.1.0`_ was modified from the original code for modern compiling
+environment.
+
+.. _Version 0.1.0: https://bitbucket.org/livibetter/clock/commits/tag/v0.1.0
 
 
 Copyright
