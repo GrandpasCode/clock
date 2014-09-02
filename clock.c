@@ -477,13 +477,14 @@ ASCII analog clock in terminal\n\
   -d, --date                display digital date and time\n\
   -f                        display date and day of week\n\
   -h, --help                display this help and exit\n\
+  -v, --version             display version and exit\n\
 \n\
 Also, press any of the keys above to change the behavior\n\
 while the clock is running.\n\
 For example, press 's' to toggle the second hand.\n\
 \n\
-Report bugs to <https://bitbucket.org/livibetter/clock/issues>\n\
-Home page: <https://bitbucket.org/livibetter/clock>\n\
+Report bugs to <" URL_ISSUES ">\n\
+Home page: <" URL_HOMEPAGE ">\n\
 For complete documentation, run: man %s\n",
             PROGRAM_NAME,
             PROGRAM_NAME
