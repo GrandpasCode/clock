@@ -27,3 +27,12 @@ There is NO WARRANTY, to the extent permitted by law.");\
 
 #define URL_HOMEPAGE  "https://bitbucket.org/livibetter/clock"
 #define URL_ISSUES    "https://bitbucket.org/livibetter/clock/issues"
+
+
+#ifdef __GNUC__
+// curses.h or other sources may already define
+#undef  GCC_UNUSED
+#define GCC_UNUSED __attribute__((unused))
+#else
+#define GCC_UNUSED /* nothing */
+#endif

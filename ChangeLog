@@ -1,0 +1,4 @@
+2014-09-10  Yu-Jie Lin  <livibetter@gmail.com>
+	* common.h: define GCC_UNUSED for GCC __attribute__(unused)
+	* bubble.c, clock.c (about_handle): avoid unused parameter warning on
+	  signum using GCC_UNUSED instead of a declaration in function

@@ -114,11 +114,8 @@ pop (struct bubble *pb)
 
 
 void
-abort_handle (int signum)
+abort_handle (int signum GCC_UNUSED)
 {
-    // avoiding "unused parameter"
-    (void) (signum);
-
     move(LINES - 1, 0);
     refresh();
     endwin();
