@@ -31,37 +31,13 @@
 #include <unistd.h>
 
 #include "common.h"
-
-#define PROGRAM_NAME  "clock"
-#define DEFAULT_TITLE "(|./)"
-
-#define HALF_Y ((double) (LINES - 1) / (double) 2.0)
-#define HALF_X ((double) (COLS  - 1) / (double) 2.0)
-// normal presentation of screen, ratio y : x on normal screen
-#define ASPECT ((double) (7.5 / 10.0))
-
-#ifndef M_PI
-#define M_PI 3.14159265358979323846
-#endif
+#include "clock.h"
 
 
-struct cartesian {
-    double x;
-    double y;
-};
-
-struct clock_mode {
-    bool second;
-    bool roman;
-    bool day_date;
-    bool digital;
-};
+char *program_name = PROGRAM_NAME;
+char *help_message = HELP_MESSAGE;
 
 jmp_buf reset;
-
-
-static void plot (struct cartesian *start, struct cartesian *end, char c);
-static void putline (int x0, int y0, int x1, int y1, char c);
 
 
 void
@@ -69,7 +45,7 @@ roman_clock_face (char *title, char *date)
 {
     static int lines = 0;
     static int cols = 0;
-    register int dash;
+    int dash;
     static char *number[12] = {
         "XII",
         "I",
@@ -84,12 +60,7 @@ roman_clock_face (char *title, char *date)
         "X",
         "XI"
     };
-
-    static struct {
-        int ix;
-        int iy;
-    } at[12];
-
+    static struct icartesian at[12];
     float x;
     float y;
     float vector;
@@ -172,13 +143,10 @@ clock_face (char *title, char *date)
 {
     static int lines = 0;
     static int cols  = 0;
-    register int dash;
+    int dash;
     static char dashes[] = "|//-\\\\|//-\\\\";
     float vector;
-    static struct {
-        int ix;
-        int iy;
-    } at[12];
+    static struct icartesian at[12];
 
     if (lines != LINES || cols != COLS) {
         lines = LINES;
@@ -245,7 +213,7 @@ drawblob (double vector, double length, char c)
 }
 
 
-static void
+void
 plot (struct cartesian *start, struct cartesian *end, char c)
 {
     putline(
@@ -262,17 +230,17 @@ plot (struct cartesian *start, struct cartesian *end, char c)
  * See Newman & Sproull "Principles of Interactive Computer
  * Graphics", McGraw-Hull, New York, 1979 pp 33-44.
  */
-static void
+void
 putline (int x0, int y0, int x1, int y1, char c)
 {
-    register int dx;
-    register int dy;
+    int dx;
+    int dy;
     int a;
     int b;
     int two_a;
     int two_b;
     int xcrit;
-    register int eps;
+    int eps;
 
     dx = 1;
     a = x1 - x0;
@@ -324,16 +292,6 @@ get_date (time_t *pt)
     s = ctime(pt);
     s[10] = '\0';
     return s;
-}
-
-
-void
-abort_handle (int signum GCC_UNUSED)
-{
-    move(LINES - 1, 0);
-    refresh();
-    endwin();
-    exit(EXIT_SUCCESS);
 }
 
 
@@ -454,44 +412,6 @@ my_clock (struct clock_mode *mode, char *title)
 }
 
 
-void
-usage (int status)
-{
-    if (status != EXIT_SUCCESS)
-        fprintf(
-            stderr,
-            "Try '%s --help' for more information.\n",
-            PROGRAM_NAME
-        );
-    else {
-        printf(
-        "\
-Usage: %s [OPTION]...\n\
-ASCII analog clock in terminal\n\
-\n\
-  -s, --second              display second hand\n\
-  -r, --roman               display square face with Roman numerals\n\
-  -d, --date                display digital date and time\n\
-  -f                        display date and day of week\n\
-  -h, --help                display this help and exit\n\
-  -v, --version             display version and exit\n\
-\n\
-Also, press any of the keys above to change the behavior\n\
-while the clock is running.\n\
-For example, press 's' to toggle the second hand.\n\
-\n\
-Report bugs to <" URL_ISSUES ">\n\
-Home page: <" URL_HOMEPAGE ">\n\
-For complete documentation, run: man %s\n",
-            PROGRAM_NAME,
-            PROGRAM_NAME
-        );
-    }
-
-    exit(status);
-}
-
-
 int
 main (int argc, char *argv[])
 {
@@ -537,7 +457,7 @@ main (int argc, char *argv[])
             break;
 
         case 'v':
-            PRINT_VERSION(PROGRAM_NAME);
+            print_version();
             exit(EXIT_SUCCESS);
 
         default:

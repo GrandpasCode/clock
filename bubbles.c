@@ -26,29 +26,11 @@
 #include <unistd.h>
 
 #include "common.h"
-
-#define PROGRAM_NAME "bubbles"
-#define SURFACE      ((LINES) / 5)
-#define NOBUBBLE     ' '
-
-// macro helpers
-#define STR(s)  XSTR(s)
-#define XSTR(s) #s
-
-// default option values
-#define DELAY_COUNT 500
+#include "bubbles.h"
 
 
-struct bubble {
-    // 0 .. LINES
-    int x;
-    // 0 .. COLS
-    int y;
-    // '.', 'o', 'O': ' ' == no bubble
-    char image;
-    // 1 .. 3
-    int speed;
-};
+char *program_name = PROGRAM_NAME;
+char *help_message = HELP_MESSAGE;
 
 
 // in range 0.0 .. 1.0
@@ -113,48 +95,6 @@ pop (struct bubble *pb)
 }
 
 
-void
-abort_handle (int signum GCC_UNUSED)
-{
-    move(LINES - 1, 0);
-    refresh();
-    endwin();
-    exit(EXIT_SUCCESS);
-}
-
-
-void
-usage (int status)
-{
-    if (status != EXIT_SUCCESS)
-        fprintf(
-            stderr,
-            "Try '%s --help' for more information.\n",
-            PROGRAM_NAME
-        );
-    else {
-        printf(
-        "\
-Usage: %s [OPTION]...\n\
-Animated ASCII bubbles in terminal\n\
-\n\
-  -d, --dalay=DELAY         update interval in milliseconds\n\
-                            (Default: " STR(DELAY_COUNT) ")\n\
-  -h, --help                display this help and exit\n\
-  -v, --version             display version and exit\n\
-\n\
-Report bugs to <" URL_ISSUES ">\n\
-Home page: <" URL_HOMEPAGE ">\n\
-For complete documentation, run: man %s\n",
-            PROGRAM_NAME,
-            PROGRAM_NAME
-        );
-    }
-
-    exit(status);
-}
-
-
 int
 main (int argc, char *argv[])
 {
@@ -168,7 +108,7 @@ main (int argc, char *argv[])
         .tv_nsec = 1000000
     };
     int quantity;
-    register int ix;
+    int ix;
     struct option long_options[] = {
         {"delay"  , required_argument, NULL, 'd'},
         {"help"   , no_argument      , NULL, 'h'},
@@ -187,7 +127,7 @@ main (int argc, char *argv[])
             break;
 
         case 'v':
-            PRINT_VERSION(PROGRAM_NAME);
+            print_version();
             exit(EXIT_SUCCESS);
 
         default:

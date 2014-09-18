@@ -14,20 +14,16 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+
+#ifndef COMMON_H
+#define COMMON_H
+
 #define VERSION                     "0.1.0"
-#define PRINT_VERSION(NAME)         \
-        do  {                       \
-            puts(NAME " " VERSION); \
-            puts("\
-Copyright (C) 2014 Authors of Clock project\n\
-License GPLv1+: GNU GPL version 1 or later <https://www.gnu.org/licenses/gpl-1.0.html>\n\
-This is free software: you are free to change and redistribute it.\n\
-There is NO WARRANTY, to the extent permitted by law.");\
-        } while (false);
 
 #define URL_HOMEPAGE  "https://bitbucket.org/livibetter/clock"
 #define URL_ISSUES    "https://bitbucket.org/livibetter/clock/issues"
 
+#define TRY "Try '%s --help' for more information.\n"
 
 #ifdef __GNUC__
 // curses.h or other sources may already define
@@ -35,4 +31,16 @@ There is NO WARRANTY, to the extent permitted by law.");\
 #define GCC_UNUSED __attribute__((unused))
 #else
 #define GCC_UNUSED /* nothing */
+#endif
+
+
+extern char *program_name;
+extern char *help_message;
+
+
+void print_version ();
+void usage (int status);
+
+void abort_handle (int signum GCC_UNUSED);
+
 #endif
