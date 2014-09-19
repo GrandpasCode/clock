@@ -25,7 +25,8 @@
 Usage: " PROGRAM_NAME " [OPTION]...\n\
 ASCII analog clock in terminal\n\
 \n\
-  -s, --second              display second hand\n\
+  -s, --second[=STYLE]      display second hand, STYLE can be either number\n\
+                            or name (Default: 0: OFF)\n\
   -r, --roman               display square face with Roman numerals\n\
   -d, --date                display digital date and time\n\
   -f                        display date and day of week\n\
@@ -34,7 +35,12 @@ ASCII analog clock in terminal\n\
 \n\
 Also, press any of the keys above to change the behavior\n\
 while the clock is running.\n\
-For example, press 's' to toggle the second hand.\n\
+For example, press 's' to cylce through the second hand styles.\n\
+\n\
+STYLE:\n\
+  0: OFF\n\
+  1: BLOB\n\
+  2: LINE\n\
 \n\
 Report bugs to <" URL_ISSUES ">\n\
 Home page: <" URL_HOMEPAGE ">\n\
@@ -62,8 +68,18 @@ struct icartesian {
     int iy;
 };
 
+enum second_style {
+    SS_OFF = 0,
+    SS_BLOB,
+    SS_LINE,
+    SS_BEGIN      = SS_OFF,
+    SS_END        = SS_LINE,
+    SS_DEFAULT    = SS_OFF,
+    SS_DEFAULT_ON = SS_BLOB
+};
+
 struct clock_mode {
-    bool second;
+    enum second_style second;
     bool roman;
     bool day_date;
     bool digital;

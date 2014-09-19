@@ -2,13 +2,7 @@
 .SH NAME
 clock \- ASCII analog clock in terminal
 .SH SYNOPSIS
-.B clock
-[
-.B \-frsd
-]
-[
-.B title ...
-]
+\fBclock\fR [\fIOPTIONS\fR] [\fItitle\fR ...]
 .SH OPTIONS
 .TP
 .B \-f
@@ -19,7 +13,7 @@ Use a square
 face with roman numerals.
 This replaces the default round clock face.
 .TP
-\fB\-s\fR, \fB\-\-second\fR
+\fB\-s\fR, \fB\-\-second\fR=\fISTYLE\fR
 Start
 .B clock
 with the seconds turned on.
@@ -37,6 +31,16 @@ Display the help message and exit.
 .B title
 Any other arguments are displayed as a title on the display in deference
 to the default ``(|./)''.
+.SH STYLES
+.TP
+\fB0\fR: \fBOFF\fR (default)
+Do not display second hand.
+.TP
+\fB1\fR: \fBBLOB\fR (default on)
+Display second hand as a blob.
+.TP
+\fB2\fR: \fBLINE\fR
+Display normal clock second hand.
 .SH SEE ALSO
 .BR date (1V),
 .BR clock (1)

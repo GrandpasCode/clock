@@ -18,6 +18,7 @@
  */
 
 #include <curses.h>
+#include <errno.h>
 #include <getopt.h>
 #include <locale.h>
 #include <math.h>
@@ -36,6 +37,13 @@
 
 char *program_name = PROGRAM_NAME;
 char *help_message = HELP_MESSAGE;
+
+char *second_styles[] = {
+    [SS_OFF ] = "OFF",
+    [SS_BLOB] = "BLOB",
+    [SS_LINE] = "LINE"
+};
+unsigned int n_second_styles = sizeof(second_styles) / sizeof(char *);
 
 jmp_buf reset;
 
@@ -341,7 +349,7 @@ my_clock (struct clock_mode *mode, char *title)
 
         switch (ch) {
         case 's':
-            mode->second = !mode->second;
+            mode->second = mode->second == SS_END ? SS_BEGIN : mode->second + 1;
             next_update = 0;
             break;
 
@@ -366,9 +374,9 @@ my_clock (struct clock_mode *mode, char *title)
             time(&tr);
             t = localtime(&tr);
 
-            if (mode->second)
+            if (mode->second != SS_OFF) {
                 next_update = time(NULL) + 1;
-            else {
+            } else {
                 // sync up to min
                 time(&tr);
                 t = localtime(&tr);
@@ -401,8 +409,18 @@ my_clock (struct clock_mode *mode, char *title)
         min_hand = (t->tm_min * 360 / 60) + (t->tm_sec * 360 / 60 / 60);
         drawline(asrads(min_hand), 0.9, '*');
 
-        if (mode->second)
+        switch (mode->second) {
+        case SS_OFF:
+            break;
+
+        case SS_LINE:
+            drawline(asrads(t->tm_sec * 360 / 60), 0.7, '@');
+            break;
+
+        default:
             drawblob(asrads(t->tm_sec * 360 / 60), 0.7, '@');
+            break;
+        }
 
         move(0, 0);
         refresh();
@@ -415,29 +433,48 @@ my_clock (struct clock_mode *mode, char *title)
 int
 main (int argc, char *argv[])
 {
-    int    c;
+    int  c;
+    long i;
+    char *title;
+    char *ns;
+    char *end;
+
     struct clock_mode mode = {
-        .second   = false,
+        .second   = SS_DEFAULT,
         .roman    = false,
         .day_date = false,
         .digital  = false
     };
-    char *title;
-    char *ns;
     struct option long_options[] = {
-        {"second" , no_argument, NULL, 's'},
-        {"roman"  , no_argument, NULL, 'r'},
-        {"date"   , no_argument, NULL, 'd'},
-        {"help"   , no_argument, NULL, 'h'},
-        {"version", no_argument, NULL, 'v'},
-        {NULL     , 0          , NULL,  0 }
+        {"second" , optional_argument, NULL, 's'},
+        {"roman"  , no_argument      , NULL, 'r'},
+        {"date"   , no_argument      , NULL, 'd'},
+        {"help"   , no_argument      , NULL, 'h'},
+        {"version", no_argument      , NULL, 'v'},
+        {NULL     , 0                , NULL,  0 }
     };
 
     setlocale(LC_ALL, "");
-    while ((c = getopt_long(argc, argv, "srfdhv", long_options, NULL)) != -1)
+    while ((c = getopt_long(argc, argv, "s::rfdhv", long_options, NULL)) != -1)
         switch (c) {
         case 's':
-            mode.second = true;
+            if (optarg == NULL) {
+                mode.second = SS_DEFAULT_ON;
+                break;
+            }
+
+            i = strtol(optarg, &end, 10);
+            if (end == optarg || *end != '\0' || errno == ERANGE) {
+                for (i = 0; (unsigned) i < n_second_styles; i++)
+                    if (strcmp(optarg, second_styles[i]) == 0)
+                        break;
+                if (i <= SS_END) {
+                    mode.second = i;
+                    break;
+                }
+            } else {
+                mode.second = atoi(optarg);
+            }
             break;
 
         case 'r':

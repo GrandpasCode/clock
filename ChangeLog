@@ -1,3 +1,8 @@
+2014-09-19  Yu-Jie Lin  <livibetter@gmail.com>
+	* clock.c (my_clock, main), clock.h: add second_style enum type and
+	  second_styles to have OFF (default), BLOB (default on), and LINE
+	  styles.
+
 2014-09-18  Yu-Jie Lin  <livibetter@gmail.com>
 	* bubbles.c, clock.c, common.c, common.h (print_version, usage,
 	  abort_handle): add common.c for clearer sources, define

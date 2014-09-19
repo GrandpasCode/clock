@@ -51,6 +51,7 @@ The usage is::
 | option and argument    | description                            |
 +========+===============+========================================+
 | ``-s`` | ``--second``  | display second hand                    |
+|        | = ``STYLE``   | , three different Styles_              |
 +--------+---------------+----------------------------------------+
 | ``-r`` | ``--roman``   | use Roman numeral on square clock face |
 +--------+---------------+----------------------------------------+
@@ -64,6 +65,18 @@ The usage is::
 +--------+---------------+----------------------------------------+
 | ``TITLE``              | use custom text instead of "(\|./)"    |
 +------------------------+----------------------------------------+
+
+Styles
+------
+
+0: ``OFF`` (default)
+  Do not display second hand
+
+1: ``BLOB`` (default on)
+  Display as a blob
+
+2: ``LINE``
+  Display the normal clock second hand
 
 Controls
 --------
