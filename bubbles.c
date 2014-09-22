@@ -134,6 +134,7 @@ main (int argc, char *argv[])
             usage(EXIT_FAILURE);
         }
 
+    srand(time(NULL));
     initscr();
     noecho();
     curs_set(0);

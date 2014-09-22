@@ -1,3 +1,6 @@
+2014-09-22  Yu-Jie Lin  <livibetter@gmail.com>
+	* bubbles.c (main): fix randomness by calling srand
+
 2014-09-19  Yu-Jie Lin  <livibetter@gmail.com>
 	* clock.c (my_clock, main), clock.h: add second_style enum type and
 	  second_styles to have OFF (default), BLOB (default on), and LINE
