@@ -18,7 +18,7 @@
 #ifndef COMMON_H
 #define COMMON_H
 
-#define VERSION "0.3.0"
+#define VERSION "0.3.1"
 
 #define URL_HOMEPAGE  "https://bitbucket.org/livibetter/clock"
 #define URL_ISSUES    "https://bitbucket.org/livibetter/clock/issues"
