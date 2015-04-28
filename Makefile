@@ -4,7 +4,8 @@ INSTALL_MAN     = $(INSTALL) -D -m 644
 
 CFLAGS   = -std=c99 -Wextra -Wall
 CPPFLAGS = -D _POSIX_C_SOURCE=200809L
-LDFLAGS  = -lm -lcurses
+LDFLAGS  =
+LDLIBS   = -lm -lcurses
 
 prefix  = /usr/local
 

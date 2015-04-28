@@ -1,3 +1,6 @@
+2015-04-28  Yu-Jie Lin  <livibetter@gmail.com>
+	* Makefile: fix misused LDFLAGS, -lm -lcurses should go in LDLIBS
+
 2014-09-22  Yu-Jie Lin  <livibetter@gmail.com>
 	* bubbles.c (main): fix randomness by calling srand
 
